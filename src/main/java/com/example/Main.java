@@ -1,10 +1,11 @@
 package com.example;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
 /**
- * Драйвер програми з консольним інтерфейсом.
+ * Драйвер програми для демонстрації успадкування та поліморфізму.
  */
 public class Main {
 
@@ -12,16 +13,16 @@ public class Main {
         printHeader();
 
         Scanner scanner = new Scanner(System.in);
-        Company company = new Company("TechCorp Solutions");
+        List<Employee> employees = new ArrayList<>();
         boolean isRunning = true;
 
         while (isRunning) {
             System.out.println();
             System.out.println("Головне меню:");
-            System.out.println("1. Створити нового співробітника");
-            System.out.println("2. Створити копію останнього співробітника (конструктор копіювання)");
-            System.out.println("3. Вивести інформацію про всіх співробітників");
-            System.out.println("4. Показати загальну кількість створених об'єктів (статичне поле)");
+            System.out.println("1. Створити базового співробітника (Employee)");
+            System.out.println("2. Створити штатного співробітника (FullTimeEmployee)");
+            System.out.println("3. Створити контрактного співробітника (ContractEmployee)");
+            System.out.println("4. Вивести інформацію про всіх співробітників (Поліморфізм)");
             System.out.println("5. Завершити роботу");
             System.out.print("Оберіть пункт меню: ");
 
@@ -29,16 +30,16 @@ public class Main {
 
             switch (choice) {
                 case "1":
-                    createNewEmployee(scanner, company);
+                    createBaseEmployee(scanner, employees);
                     break;
                 case "2":
-                    copyLastEmployee(company);
+                    createFullTimeEmployee(scanner, employees);
                     break;
                 case "3":
-                    displayEmployees(company);
+                    createContractEmployee(scanner, employees);
                     break;
                 case "4":
-                    System.out.println("Всього екземплярів Employee створено в пам'яті: " + Employee.getTotalEmployeesCreated());
+                    displayAllEmployees(employees);
                     break;
                 case "5":
                     isRunning = false;
@@ -54,12 +55,12 @@ public class Main {
     }
 
     private static void printHeader() {
-        System.out.println("Практична робота №6");
-        System.out.println("Тема: Статичні члени, агрегація, перерахування (enum)");
+        System.out.println("Практична робота №7");
+        System.out.println("Тема: Наслідування, поліморфізм, колекції (ArrayList)");
         System.out.println("Виконав: студент Демченко Станіслав");
     }
 
-    private static void createNewEmployee(Scanner scanner, Company company) {
+    private static void createBaseEmployee(Scanner scanner, List<Employee> list) {
         try {
             System.out.print("Введіть ім'я: ");
             String name = scanner.nextLine();
@@ -73,59 +74,96 @@ public class Main {
             System.out.print("Введіть стаж роботи (роки): ");
             int experience = Integer.parseInt(scanner.nextLine().trim());
 
-            System.out.println("Оберіть відділ (1 - IT, 2 - HR, 3 - FINANCE, 4 - MARKETING): ");
-            String deptChoice = scanner.nextLine().trim();
-            Department department;
-            switch (deptChoice) {
-                case "1":
-                    department = Department.IT;
-                    break;
-                case "2":
-                    department = Department.HR;
-                    break;
-                case "3":
-                    department = Department.FINANCE;
-                    break;
-                case "4":
-                    department = Department.MARKETING;
-                    break;
-                default:
-                    throw new IllegalArgumentException("Обрано неіснуючий відділ");
-            }
+            Department department = chooseDepartment(scanner);
 
             Employee employee = new Employee(name, position, salary, experience, department);
-            company.addEmployee(employee);
-            System.out.println("Співробітника успішно додано до компанії " + company.getCompanyName());
+            list.add(employee);
+            System.out.println("Базового співробітника успішно додано.");
         } catch (NumberFormatException e) {
-            System.out.println("Помилка введення: для числових даних введіть коректне число.");
+            System.out.println("Помилка введення: очікується числове значення.");
         } catch (IllegalArgumentException e) {
             System.out.println("Помилка валідації даних: " + e.getMessage());
         }
     }
 
-    private static void copyLastEmployee(Company company) {
-        List<Employee> list = company.getEmployees();
-        if (list.isEmpty()) {
-            System.out.println("Помилка: штат порожній, немає кого копіювати.");
-            return;
-        }
+    private static void createFullTimeEmployee(Scanner scanner, List<Employee> list) {
+        try {
+            System.out.print("Введіть ім'я: ");
+            String name = scanner.nextLine();
 
-        Employee lastEmployee = list.get(list.size() - 1);
-        Employee cloned = new Employee(lastEmployee);
-        cloned.setName(lastEmployee.getName() + " (Копія)");
-        company.addEmployee(cloned);
-        System.out.println("Створено дублікат об'єкта через конструктор копіювання: " + cloned);
+            System.out.print("Введіть посаду: ");
+            String position = scanner.nextLine();
+
+            System.out.print("Введіть заробітну плату: ");
+            double salary = Double.parseDouble(scanner.nextLine().trim());
+
+            System.out.print("Введіть стаж роботи (роки): ");
+            int experience = Integer.parseInt(scanner.nextLine().trim());
+
+            Department department = chooseDepartment(scanner);
+
+            System.out.print("Введіть розмір річного бонусу: ");
+            double bonus = Double.parseDouble(scanner.nextLine().trim());
+
+            FullTimeEmployee fullTimeEmployee = new FullTimeEmployee(name, position, salary, experience, department, bonus);
+            list.add(fullTimeEmployee);
+            System.out.println("Штатного співробітника успішно додано.");
+        } catch (NumberFormatException e) {
+            System.out.println("Помилка введення: очікується числове значення.");
+        } catch (IllegalArgumentException e) {
+            System.out.println("Помилка валідації даних: " + e.getMessage());
+        }
     }
 
-    private static void displayEmployees(Company company) {
-        List<Employee> list = company.getEmployees();
+    private static void createContractEmployee(Scanner scanner, List<Employee> list) {
+        try {
+            System.out.print("Введіть ім'я: ");
+            String name = scanner.nextLine();
+
+            System.out.print("Введіть посаду: ");
+            String position = scanner.nextLine();
+
+            System.out.print("Введіть заробітну плату: ");
+            double salary = Double.parseDouble(scanner.nextLine().trim());
+
+            System.out.print("Введіть стаж роботи (роки): ");
+            int experience = Integer.parseInt(scanner.nextLine().trim());
+
+            Department department = chooseDepartment(scanner);
+
+            System.out.print("Введіть тривалість контракту (місяців): ");
+            int duration = Integer.parseInt(scanner.nextLine().trim());
+
+            ContractEmployee contractEmployee = new ContractEmployee(name, position, salary, experience, department, duration);
+            list.add(contractEmployee);
+            System.out.println("Контрактного співробітника успішно додано.");
+        } catch (NumberFormatException e) {
+            System.out.println("Помилка введення: очікується числове значення.");
+        } catch (IllegalArgumentException e) {
+            System.out.println("Помилка валідації даних: " + e.getMessage());
+        }
+    }
+
+    private static Department chooseDepartment(Scanner scanner) {
+        System.out.println("Оберіть відділ (1 - IT, 2 - HR, 3 - FINANCE, 4 - MARKETING): ");
+        String deptChoice = scanner.nextLine().trim();
+        switch (deptChoice) {
+            case "1": return Department.IT;
+            case "2": return Department.HR;
+            case "3": return Department.FINANCE;
+            case "4": return Department.MARKETING;
+            default: throw new IllegalArgumentException("Обрано неіснуючий відділ");
+        }
+    }
+
+    private static void displayAllEmployees(List<Employee> list) {
         if (list.isEmpty()) {
-            System.out.println("У компанії " + company.getCompanyName() + " поки немає співробітників.");
+            System.out.println("Список співробітників порожній.");
             return;
         }
 
         System.out.println();
-        System.out.println("Список співробітників компанії " + company.getCompanyName() + " (всього: " + list.size() + "):");
+        System.out.println("Загальний список співробітників (Поліморфний вивід, всього: " + list.size() + "):");
         for (Employee emp : list) {
             System.out.println(emp);
         }
