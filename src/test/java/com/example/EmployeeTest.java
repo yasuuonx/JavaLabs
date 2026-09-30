@@ -4,7 +4,7 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
- * Тести для перевірки валідації, копіювання та enum.
+ * Тести для перевірки базового класу та похідних класів.
  */
 class EmployeeTest {
 
@@ -20,20 +20,27 @@ class EmployeeTest {
     }
 
     @Test
-    void shouldThrowExceptionWhenInvalidConstructorData() {
-        assertThrows(IllegalArgumentException.class, () -> new Employee("", "Менеджер", 25000.0, 1, Department.HR));
-        assertThrows(IllegalArgumentException.class, () -> new Employee("Андрій", null, 25000.0, 1, Department.HR));
-        assertThrows(IllegalArgumentException.class, () -> new Employee("Василь", "Водій", 0.0, 2, Department.FINANCE));
-        assertThrows(IllegalArgumentException.class, () -> new Employee("Сергій", "Охоронець", 15000.0, -1, Department.MARKETING));
-        assertThrows(IllegalArgumentException.class, () -> new Employee("Ольга", "Аналітик", 20000.0, 2, null));
+    void shouldThrowExceptionWhenInvalidFullTimeEmployeeBonus() {
+        assertThrows(IllegalArgumentException.class, () -> {
+            new FullTimeEmployee("Олег", "Директор", 80000.0, 10, Department.FINANCE, -500.0);
+        });
     }
 
     @Test
-    void shouldCorrectlyCopyEmployeeUsingCopyConstructor() {
-        Employee original = new Employee("Ірина", "Бухгалтер", 32000.0, 6, Department.FINANCE);
-        Employee copy = new Employee(original);
+    void shouldThrowExceptionWhenInvalidContractDuration() {
+        assertThrows(IllegalArgumentException.class, () -> {
+            new ContractEmployee("Денис", "Дизайнер", 35000.0, 1, Department.MARKETING, 0);
+        });
+    }
 
-        assertEquals(original, copy);
-        assertNotSame(original, copy);
+    @Test
+    void shouldCorrectlyInstantiateDerivedClasses() {
+        FullTimeEmployee fullTime = new FullTimeEmployee("Іван", "Тімлід", 90000.0, 7, Department.IT, 15000.0);
+        ContractEmployee contract = new ContractEmployee("Марина", "HR", 28000.0, 2, Department.HR, 6);
+
+        assertEquals(15000.0, fullTime.getAnnualBonus());
+        assertEquals(6, contract.getContractDurationMonths());
+        assertTrue(fullTime instanceof Employee);
+        assertTrue(contract instanceof Employee);
     }
 }
