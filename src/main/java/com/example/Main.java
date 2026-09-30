@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Scanner;
 
 /**
- * Драйвер програми для демонстрації успадкування та поліморфізму.
+ * Драйвер програми з ієрархічним консольним меню та поліморфною колекцією.
  */
 public class Main {
 
@@ -19,34 +19,26 @@ public class Main {
         while (isRunning) {
             System.out.println();
             System.out.println("Головне меню:");
-            System.out.println("1. Створити базового співробітника (Employee)");
-            System.out.println("2. Створити штатного співробітника (FullTimeEmployee)");
-            System.out.println("3. Створити контрактного співробітника (ContractEmployee)");
-            System.out.println("4. Вивести інформацію про всіх співробітників (Поліморфізм)");
-            System.out.println("5. Завершити роботу");
-            System.out.print("Оберіть пункт меню: ");
+            System.out.println("1. Створити новий об'єкт");
+            System.out.println("2. Вивести інформацію про всі об'єкти");
+            System.out.println("3. Завершити роботу програми");
+            System.out.print("Оберіть дію: ");
 
             String choice = scanner.nextLine().trim();
 
             switch (choice) {
                 case "1":
-                    createBaseEmployee(scanner, employees);
+                    handleCreateObjectMenu(scanner, employees);
                     break;
                 case "2":
-                    createFullTimeEmployee(scanner, employees);
-                    break;
-                case "3":
-                    createContractEmployee(scanner, employees);
-                    break;
-                case "4":
                     displayAllEmployees(employees);
                     break;
-                case "5":
+                case "3":
                     isRunning = false;
-                    System.out.println("Роботу завершено.");
+                    System.out.println("Роботу програми завершено.");
                     break;
                 default:
-                    System.out.println("Помилка: невідома дія. Оберіть число від 1 до 5.");
+                    System.out.println("Помилка: невідома опція меню. Оберіть пункт від 1 до 3.");
                     break;
             }
         }
@@ -55,38 +47,29 @@ public class Main {
     }
 
     private static void printHeader() {
-        System.out.println("Практична робота №7");
-        System.out.println("Тема: Наслідування, поліморфізм, колекції (ArrayList)");
+        System.out.println("Практична робота №8");
+        System.out.println("Тема: Розширення ієрархії класів, поліморфізм, меню створення об'єктів");
         System.out.println("Виконав: студент Демченко Станіслав");
     }
 
-    private static void createBaseEmployee(Scanner scanner, List<Employee> list) {
-        try {
-            System.out.print("Введіть ім'я: ");
-            String name = scanner.nextLine();
+    private static void handleCreateObjectMenu(Scanner scanner, List<Employee> list) {
+        System.out.println();
+        System.out.println("Оберіть тип об'єкта для створення:");
+        System.out.println("1. Базовий співробітник (Employee)");
+        System.out.println("2. Штатний співробітник (FullTimeEmployee)");
+        System.out.println("3. Контрактний співробітник (ContractEmployee)");
+        System.out.println("4. Менеджер (Manager)");
+        System.out.println("5. Фрилансер (Freelancer)");
+        System.out.println("0. Повернутися до головного меню");
+        System.out.print("Ваш вибір: ");
 
-            System.out.print("Введіть посаду: ");
-            String position = scanner.nextLine();
+        String typeChoice = scanner.nextLine().trim();
 
-            System.out.print("Введіть заробітну плату: ");
-            double salary = Double.parseDouble(scanner.nextLine().trim());
-
-            System.out.print("Введіть стаж роботи (роки): ");
-            int experience = Integer.parseInt(scanner.nextLine().trim());
-
-            Department department = chooseDepartment(scanner);
-
-            Employee employee = new Employee(name, position, salary, experience, department);
-            list.add(employee);
-            System.out.println("Базового співробітника успішно додано.");
-        } catch (NumberFormatException e) {
-            System.out.println("Помилка введення: очікується числове значення.");
-        } catch (IllegalArgumentException e) {
-            System.out.println("Помилка валідації даних: " + e.getMessage());
+        if ("0".equals(typeChoice)) {
+            System.out.println("Повернення до головного меню без створення об'єкта.");
+            return;
         }
-    }
 
-    private static void createFullTimeEmployee(Scanner scanner, List<Employee> list) {
         try {
             System.out.print("Введіть ім'я: ");
             String name = scanner.nextLine();
@@ -102,43 +85,45 @@ public class Main {
 
             Department department = chooseDepartment(scanner);
 
-            System.out.print("Введіть розмір річного бонусу: ");
-            double bonus = Double.parseDouble(scanner.nextLine().trim());
-
-            FullTimeEmployee fullTimeEmployee = new FullTimeEmployee(name, position, salary, experience, department, bonus);
-            list.add(fullTimeEmployee);
-            System.out.println("Штатного співробітника успішно додано.");
+            switch (typeChoice) {
+                case "1":
+                    list.add(new Employee(name, position, salary, experience, department));
+                    System.out.println("Об'єкт Employee успішно створено.");
+                    break;
+                case "2":
+                    System.out.print("Введіть розмір річного бонусу: ");
+                    double bonus = Double.parseDouble(scanner.nextLine().trim());
+                    list.add(new FullTimeEmployee(name, position, salary, experience, department, bonus));
+                    System.out.println("Об'єкт FullTimeEmployee успішно створено.");
+                    break;
+                case "3":
+                    System.out.print("Введіть тривалість контракту (місяців): ");
+                    int duration = Integer.parseInt(scanner.nextLine().trim());
+                    list.add(new ContractEmployee(name, position, salary, experience, department, duration));
+                    System.out.println("Об'єкт ContractEmployee успішно створено.");
+                    break;
+                case "4":
+                    System.out.print("Введіть розмір річного бонусу: ");
+                    double mgrBonus = Double.parseDouble(scanner.nextLine().trim());
+                    System.out.print("Введіть кількість підлеглих у команді: ");
+                    int teamSize = Integer.parseInt(scanner.nextLine().trim());
+                    list.add(new Manager(name, position, salary, experience, department, mgrBonus, teamSize));
+                    System.out.println("Об'єкт Manager успішно створено.");
+                    break;
+                case "5":
+                    System.out.print("Введіть тривалість контракту (місяців): ");
+                    int flDuration = Integer.parseInt(scanner.nextLine().trim());
+                    System.out.print("Введіть погодинну ставку (грн/год): ");
+                    double hourlyRate = Double.parseDouble(scanner.nextLine().trim());
+                    list.add(new Freelancer(name, position, salary, experience, department, flDuration, hourlyRate));
+                    System.out.println("Об'єкт Freelancer успішно створено.");
+                    break;
+                default:
+                    System.out.println("Помилка: невідомий тип об'єкта. Створення скасовано.");
+                    break;
+            }
         } catch (NumberFormatException e) {
-            System.out.println("Помилка введення: очікується числове значення.");
-        } catch (IllegalArgumentException e) {
-            System.out.println("Помилка валідації даних: " + e.getMessage());
-        }
-    }
-
-    private static void createContractEmployee(Scanner scanner, List<Employee> list) {
-        try {
-            System.out.print("Введіть ім'я: ");
-            String name = scanner.nextLine();
-
-            System.out.print("Введіть посаду: ");
-            String position = scanner.nextLine();
-
-            System.out.print("Введіть заробітну плату: ");
-            double salary = Double.parseDouble(scanner.nextLine().trim());
-
-            System.out.print("Введіть стаж роботи (роки): ");
-            int experience = Integer.parseInt(scanner.nextLine().trim());
-
-            Department department = chooseDepartment(scanner);
-
-            System.out.print("Введіть тривалість контракту (місяців): ");
-            int duration = Integer.parseInt(scanner.nextLine().trim());
-
-            ContractEmployee contractEmployee = new ContractEmployee(name, position, salary, experience, department, duration);
-            list.add(contractEmployee);
-            System.out.println("Контрактного співробітника успішно додано.");
-        } catch (NumberFormatException e) {
-            System.out.println("Помилка введення: очікується числове значення.");
+            System.out.println("Помилка введення: для числового поля необхідно вводити коректне число.");
         } catch (IllegalArgumentException e) {
             System.out.println("Помилка валідації даних: " + e.getMessage());
         }
@@ -158,12 +143,12 @@ public class Main {
 
     private static void displayAllEmployees(List<Employee> list) {
         if (list.isEmpty()) {
-            System.out.println("Список співробітників порожній.");
+            System.out.println("Колекція порожня. Додайте об'єкти через меню створення.");
             return;
         }
 
         System.out.println();
-        System.out.println("Загальний список співробітників (Поліморфний вивід, всього: " + list.size() + "):");
+        System.out.println("Список зареєстрованих об'єктів у колекції (Поліморфізм, всього: " + list.size() + "):");
         for (Employee emp : list) {
             System.out.println(emp);
         }
