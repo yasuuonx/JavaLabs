@@ -1,5 +1,7 @@
 package com.example;
 
+import java.util.Objects;
+
 public class Employee {
     private String name;
     private String position;
@@ -33,5 +35,26 @@ public class Employee {
 
     public void setSalary(double salary) {
         this.salary = salary;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Employee employee = (Employee) o;
+        return Double.compare(employee.salary, salary) == 0 &&
+                Objects.equals(name, employee.name) &&
+                Objects.equals(position, employee.position);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name, position, salary);
+    }
+
+    @Override
+    public String toString() {
+        return String.format("Employee { Ім'я: '%s', Посада: '%s', Зарплата: %.2f грн }",
+                name, position, salary);
     }
 }
