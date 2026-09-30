@@ -4,7 +4,7 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
- * Тести для перевірки базового класу та похідних класів.
+ * Тести для перевірки повної ієрархії класів Employee.
  */
 class EmployeeTest {
 
@@ -20,27 +20,30 @@ class EmployeeTest {
     }
 
     @Test
-    void shouldThrowExceptionWhenInvalidFullTimeEmployeeBonus() {
+    void shouldThrowExceptionWhenInvalidManagerTeamSize() {
         assertThrows(IllegalArgumentException.class, () -> {
-            new FullTimeEmployee("Олег", "Директор", 80000.0, 10, Department.FINANCE, -500.0);
+            new Manager("Віктор", "Керівник", 70000.0, 8, Department.IT, 10000.0, -1);
         });
     }
 
     @Test
-    void shouldThrowExceptionWhenInvalidContractDuration() {
+    void shouldThrowExceptionWhenInvalidFreelancerHourlyRate() {
         assertThrows(IllegalArgumentException.class, () -> {
-            new ContractEmployee("Денис", "Дизайнер", 35000.0, 1, Department.MARKETING, 0);
+            new Freelancer("Максим", "Дизайнер", 20000.0, 3, Department.MARKETING, 3, 0.0);
         });
     }
 
     @Test
-    void shouldCorrectlyInstantiateDerivedClasses() {
-        FullTimeEmployee fullTime = new FullTimeEmployee("Іван", "Тімлід", 90000.0, 7, Department.IT, 15000.0);
-        ContractEmployee contract = new ContractEmployee("Марина", "HR", 28000.0, 2, Department.HR, 6);
+    void shouldCorrectlyInstantiateAllHierarchyClasses() {
+        Employee emp = new Employee("Сергій", "Охоронець", 15000.0, 1, Department.HR);
+        FullTimeEmployee ft = new FullTimeEmployee("Іван", "Тімлід", 90000.0, 7, Department.IT, 15000.0);
+        ContractEmployee ct = new ContractEmployee("Марина", "HR", 28000.0, 2, Department.HR, 6);
+        Manager mgr = new Manager("Ольга", "CTO", 120000.0, 10, Department.IT, 25000.0, 15);
+        Freelancer fl = new Freelancer("Денис", "Розробник", 40000.0, 4, Department.IT, 3, 450.0);
 
-        assertEquals(15000.0, fullTime.getAnnualBonus());
-        assertEquals(6, contract.getContractDurationMonths());
-        assertTrue(fullTime instanceof Employee);
-        assertTrue(contract instanceof Employee);
+        assertEquals(15, mgr.getTeamSize());
+        assertEquals(450.0, fl.getHourlyRate());
+        assertTrue(mgr instanceof Employee);
+        assertTrue(fl instanceof Employee);
     }
 }
