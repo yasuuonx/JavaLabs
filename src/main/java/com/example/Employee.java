@@ -3,11 +3,9 @@ package com.example;
 import java.util.Objects;
 
 /**
- * Клас описує співробітника підприємства.
+ * Базовий клас описує співробітника підприємства.
  */
 public class Employee {
-    private static int totalEmployeesCreated = 0;
-
     private String name;
     private String position;
     private double salary;
@@ -22,7 +20,6 @@ public class Employee {
      * @param salary          заробітна плата
      * @param experienceYears стаж роботи у роках
      * @param department      відділ компанії
-     * @throws IllegalArgumentException якщо передано некоректні дані
      */
     public Employee(String name, String position, double salary, int experienceYears, Department department) {
         setName(name);
@@ -30,14 +27,12 @@ public class Employee {
         setSalary(salary);
         setExperienceYears(experienceYears);
         setDepartment(department);
-        totalEmployeesCreated++;
     }
 
     /**
      * Конструктор копіювання.
      *
      * @param other об'єкт Employee для клонування
-     * @throws IllegalArgumentException якщо переданий об'єкт є null
      */
     public Employee(Employee other) {
         if (other == null) {
@@ -48,16 +43,6 @@ public class Employee {
         this.salary = other.salary;
         this.experienceYears = other.experienceYears;
         this.department = other.department;
-        totalEmployeesCreated++;
-    }
-
-    /**
-     * Отримує загальну кількість створених об'єктів Employee.
-     *
-     * @return кількість екземплярів
-     */
-    public static int getTotalEmployeesCreated() {
-        return totalEmployeesCreated;
     }
 
     public String getName() {
@@ -121,10 +106,10 @@ public class Employee {
         if (o == null || getClass() != o.getClass()) return false;
         Employee employee = (Employee) o;
         return Double.compare(employee.salary, salary) == 0 &&
-                experienceYears == employee.experienceYears &&
-                Objects.equals(name, employee.name) &&
-                Objects.equals(position, employee.position) &&
-                department == employee.department;
+               experienceYears == employee.experienceYears &&
+               Objects.equals(name, employee.name) &&
+               Objects.equals(position, employee.position) &&
+               department == employee.department;
     }
 
     @Override
@@ -135,6 +120,6 @@ public class Employee {
     @Override
     public String toString() {
         return String.format("Employee { Ім'я: '%s', Посада: '%s', Зарплата: %.2f грн, Стаж: %d р., Відділ: %s }",
-                name, position, salary, experienceYears, department.getTitle());
+                             name, position, salary, experienceYears, department.getTitle());
     }
 }
