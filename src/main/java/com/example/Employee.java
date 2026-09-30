@@ -3,7 +3,7 @@ package com.example;
 import java.util.Objects;
 
 /**
- * Клас описує співробітника компанії.
+ * Клас описує співробітника з перевіркою коректності параметрів.
  */
 public class Employee {
     private String name;
@@ -12,18 +12,19 @@ public class Employee {
     private int experienceYears;
 
     /**
-     * Конструктор з параметрами.
+     * Конструктор з валідацією через виклик сетерів.
      *
      * @param name            ім'я співробітника
      * @param position        посада співробітника
      * @param salary          заробітна плата
      * @param experienceYears стаж роботи у роках
+     * @throws IllegalArgumentException якщо передано некоректні дані
      */
     public Employee(String name, String position, double salary, int experienceYears) {
-        this.name = name;
-        this.position = position;
-        this.salary = salary;
-        this.experienceYears = experienceYears;
+        setName(name);
+        setPosition(position);
+        setSalary(salary);
+        setExperienceYears(experienceYears);
     }
 
     public String getName() {
@@ -31,7 +32,10 @@ public class Employee {
     }
 
     public void setName(String name) {
-        this.name = name;
+        if (name == null || name.trim().isEmpty()) {
+            throw new IllegalArgumentException("Ім'я не може бути порожнім");
+        }
+        this.name = name.trim();
     }
 
     public String getPosition() {
@@ -39,7 +43,10 @@ public class Employee {
     }
 
     public void setPosition(String position) {
-        this.position = position;
+        if (position == null || position.trim().isEmpty()) {
+            throw new IllegalArgumentException("Посада не може бути порожньою");
+        }
+        this.position = position.trim();
     }
 
     public double getSalary() {
@@ -47,6 +54,9 @@ public class Employee {
     }
 
     public void setSalary(double salary) {
+        if (salary <= 0) {
+            throw new IllegalArgumentException("Заробітна плата повинна бути більшою за нуль");
+        }
         this.salary = salary;
     }
 
@@ -55,6 +65,9 @@ public class Employee {
     }
 
     public void setExperienceYears(int experienceYears) {
+        if (experienceYears < 0) {
+            throw new IllegalArgumentException("Стаж не може бути від'ємним");
+        }
         this.experienceYears = experienceYears;
     }
 
