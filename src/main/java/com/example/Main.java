@@ -4,27 +4,25 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 /**
- * Драйвер програми з підтримкою пошуку об'єктів за критеріями,
- * інтерактивним меню, завантаженням та збереженням у файли.
+ * Драйвер програми з інтеграцією класу-контейнера Company.
  */
 public class Main {
     private static final String TEXT_FILE = "input.txt";
-    private static final String JSON_FILE = "input.json";
 
     public static void main(String[] args) {
         printHeader();
 
-        ArrayList<Employee> employees = FileManager.loadFromTextFile(TEXT_FILE);
-        System.out.println("Завантажено об'єктів із файлу " + TEXT_FILE + ": " + employees.size());
+        Company company = FileManager.loadCompanyFromFile(TEXT_FILE);
+        System.out.println("Компанія: " + company.getName() + ", завантажено унікальних позицій: " + company.size());
 
         Scanner scanner = new Scanner(System.in);
         boolean isRunning = true;
 
         while (isRunning) {
             System.out.println();
-            System.out.println("Головне меню:");
+            System.out.println("Головне меню (" + company.getName() + "):");
             System.out.println("1. Пошук об'єкта");
-            System.out.println("2. Створити новий об'єкт");
+            System.out.println("2. Створити новий об'єкт (додати до компанії)");
             System.out.println("3. Вивести інформацію про всі об'єкти");
             System.out.println("4. Завершити роботу програми");
             System.out.print("Оберіть дію: ");
@@ -33,18 +31,17 @@ public class Main {
 
             switch (choice) {
                 case "1":
-                    handleSearchMenu(scanner, employees);
+                    handleSearchMenu(scanner, company);
                     break;
                 case "2":
-                    handleCreateObjectMenu(scanner, employees);
+                    handleCreateObjectMenu(scanner, company);
                     break;
                 case "3":
-                    displayAllEmployees(employees);
+                    displayAllEmployees(company);
                     break;
                 case "4":
-                    FileManager.saveToTextFile(TEXT_FILE, employees);
-                    FileManager.saveToJsonFile(JSON_FILE, employees);
-                    System.out.println("Дані успішно збережено у файли " + TEXT_FILE + " та " + JSON_FILE);
+                    FileManager.saveCompanyToFile(TEXT_FILE, company);
+                    System.out.println("Дані компанії збережено у файл " + TEXT_FILE);
                     isRunning = false;
                     System.out.println("Роботу програми завершено.");
                     break;
@@ -58,20 +55,14 @@ public class Main {
     }
 
     private static void printHeader() {
-        System.out.println("Практична робота №10");
-        System.out.println("Тема: Пошук у колекціях");
+        System.out.println("Практична робота №11");
+        System.out.println("Тема: Колекції, агрегація, класи-обгортки");
         System.out.println("Виконав: студент Демченко Станіслав");
     }
 
-    /**
-     * Меню вибору критерію пошуку об'єктів.
-     *
-     * @param scanner   сканер консолі
-     * @param employees оригінальна незмінна колекція співробітників
-     */
-    private static void handleSearchMenu(Scanner scanner, ArrayList<Employee> employees) {
-        if (employees.isEmpty()) {
-            System.out.println("Колекція порожня. Немає об'єктів для пошуку.");
+    private static void handleSearchMenu(Scanner scanner, Company company) {
+        if (company.size() == 0) {
+            System.out.println("Колекція компанії порожня. Немає об'єктів для пошуку.");
             return;
         }
 
@@ -89,7 +80,7 @@ public class Main {
             case "1":
                 System.out.print("Введіть посаду (або частину назви): ");
                 String targetPosition = scanner.nextLine().trim();
-                ArrayList<Employee> positionResults = searchByPosition(employees, targetPosition);
+                ArrayList<Employee> positionResults = company.searchByPosition(targetPosition);
                 displaySearchResults(positionResults);
                 break;
             case "2":
@@ -102,7 +93,7 @@ public class Main {
                         System.out.println("Помилка: мінімальна зарплата не може перевищувати максимальну.");
                         return;
                     }
-                    ArrayList<Employee> salaryResults = searchBySalaryRange(employees, minSalary, maxSalary);
+                    ArrayList<Employee> salaryResults = company.searchBySalaryRange(minSalary, maxSalary);
                     displaySearchResults(salaryResults);
                 } catch (NumberFormatException e) {
                     System.out.println("Помилка введення: очікується числове значення.");
@@ -111,7 +102,7 @@ public class Main {
             case "3":
                 try {
                     Department department = chooseDepartment(scanner);
-                    ArrayList<Employee> departmentResults = searchByDepartment(employees, department);
+                    ArrayList<Employee> departmentResults = company.searchByDepartment(department);
                     displaySearchResults(departmentResults);
                 } catch (IllegalArgumentException e) {
                     System.out.println("Помилка: " + e.getMessage());
@@ -126,70 +117,6 @@ public class Main {
         }
     }
 
-    /**
-     * Критерій 1: Пошук за посадою (без урахування регістру).
-     *
-     * @param sourceList джерело даних (не змінюється)
-     * @param position   шукана посада
-     * @return список знайдених співробітників
-     */
-    public static ArrayList<Employee> searchByPosition(ArrayList<Employee> sourceList, String position) {
-        ArrayList<Employee> result = new ArrayList<Employee>();
-        if (position == null || position.trim().isEmpty()) {
-            return result;
-        }
-        String normalizedTarget = position.trim().toLowerCase();
-        for (Employee emp : sourceList) {
-            if (emp.getPosition().toLowerCase().contains(normalizedTarget)) {
-                result.add(emp);
-            }
-        }
-        return result;
-    }
-
-    /**
-     * Критерій 2: Пошук за діапазоном заробітної плати.
-     *
-     * @param sourceList джерело даних (не змінюється)
-     * @param minSalary  нижня межа зарплати
-     * @param maxSalary  верхня межа зарплати
-     * @return список знайдених співробітників
-     */
-    public static ArrayList<Employee> searchBySalaryRange(ArrayList<Employee> sourceList, double minSalary, double maxSalary) {
-        ArrayList<Employee> result = new ArrayList<Employee>();
-        for (Employee emp : sourceList) {
-            if (emp.getSalary() >= minSalary && emp.getSalary() <= maxSalary) {
-                result.add(emp);
-            }
-        }
-        return result;
-    }
-
-    /**
-     * Критерій 3: Пошук за відділом.
-     *
-     * @param sourceList джерело даних (не змінюється)
-     * @param department шуканий відділ
-     * @return список знайдених співробітників
-     */
-    public static ArrayList<Employee> searchByDepartment(ArrayList<Employee> sourceList, Department department) {
-        ArrayList<Employee> result = new ArrayList<Employee>();
-        if (department == null) {
-            return result;
-        }
-        for (Employee emp : sourceList) {
-            if (emp.getDepartment() == department) {
-                result.add(emp);
-            }
-        }
-        return result;
-    }
-
-    /**
-     * Виводить результати пошуку або повідомляє про їх відсутність.
-     *
-     * @param results список знайдених об'єктів
-     */
     private static void displaySearchResults(ArrayList<Employee> results) {
         if (results.isEmpty()) {
             System.out.println("Результат: жоден об'єкт не відповідає умовам пошуку.");
@@ -202,7 +129,7 @@ public class Main {
         }
     }
 
-    private static void handleCreateObjectMenu(Scanner scanner, ArrayList<Employee> list) {
+    private static void handleCreateObjectMenu(Scanner scanner, Company company) {
         System.out.println();
         System.out.println("Оберіть тип об'єкта для створення:");
         System.out.println("1. Базовий співробітник (Employee)");
@@ -235,45 +162,48 @@ public class Main {
 
             Department department = chooseDepartment(scanner);
 
+            System.out.print("Введіть кількість таких штатних позицій: ");
+            int quantity = Integer.parseInt(scanner.nextLine().trim());
+
+            Employee createdEmployee = null;
+
             switch (typeChoice) {
                 case "1":
-                    list.add(new Employee(name, position, salary, experience, department));
-                    System.out.println("Об'єкт Employee успішно створено.");
+                    createdEmployee = new Employee(name, position, salary, experience, department);
                     break;
                 case "2":
                     System.out.print("Введіть розмір річного бонусу: ");
                     double bonus = Double.parseDouble(scanner.nextLine().trim());
-                    list.add(new FullTimeEmployee(name, position, salary, experience, department, bonus));
-                    System.out.println("Об'єкт FullTimeEmployee успішно створено.");
+                    createdEmployee = new FullTimeEmployee(name, position, salary, experience, department, bonus);
                     break;
                 case "3":
                     System.out.print("Введіть тривалість контракту (місяців): ");
                     int duration = Integer.parseInt(scanner.nextLine().trim());
-                    list.add(new ContractEmployee(name, position, salary, experience, department, duration));
-                    System.out.println("Об'єкт ContractEmployee успішно створено.");
+                    createdEmployee = new ContractEmployee(name, position, salary, experience, department, duration);
                     break;
                 case "4":
                     System.out.print("Введіть розмір річного бонусу: ");
                     double mgrBonus = Double.parseDouble(scanner.nextLine().trim());
                     System.out.print("Введіть кількість підлеглих у команді: ");
                     int teamSize = Integer.parseInt(scanner.nextLine().trim());
-                    list.add(new Manager(name, position, salary, experience, department, mgrBonus, teamSize));
-                    System.out.println("Об'єкт Manager успішно створено.");
+                    createdEmployee = new Manager(name, position, salary, experience, department, mgrBonus, teamSize);
                     break;
                 case "5":
                     System.out.print("Введіть тривалість контракту (місяців): ");
                     int flDuration = Integer.parseInt(scanner.nextLine().trim());
                     System.out.print("Введіть погодинну ставку (грн/год): ");
                     double hourlyRate = Double.parseDouble(scanner.nextLine().trim());
-                    list.add(new Freelancer(name, position, salary, experience, department, flDuration, hourlyRate));
-                    System.out.println("Об'єкт Freelancer успішно створено.");
+                    createdEmployee = new Freelancer(name, position, salary, experience, department, flDuration, hourlyRate);
                     break;
                 default:
                     System.out.println("Помилка: невідомий тип об'єкта. Створення скасовано.");
-                    break;
+                    return;
             }
+
+            company.addNewEmployee(createdEmployee, quantity);
+            System.out.println("Об'єкт успішно додано/оновлено у компанії " + company.getName());
         } catch (NumberFormatException e) {
-            System.out.println("Помилка введення: для числового поля необхідно вводити коректне число.");
+            System.out.println("Помилка введення: для числових даних введіть коректне число.");
         } catch (IllegalArgumentException e) {
             System.out.println("Помилка валідації даних: " + e.getMessage());
         }
@@ -291,16 +221,18 @@ public class Main {
         }
     }
 
-    private static void displayAllEmployees(ArrayList<Employee> list) {
-        if (list.isEmpty()) {
-            System.out.println("Колекція порожня. Додайте об'єкти через меню створення.");
+    private static void displayAllEmployees(Company company) {
+        if (company.size() == 0) {
+            System.out.println("У компанії " + company.getName() + " немає співробітників.");
             return;
         }
 
         System.out.println();
-        System.out.println("Список зареєстрованих об'єктів у колекції (всього: " + list.size() + "):");
-        for (Employee emp : list) {
-            System.out.println(emp);
+        System.out.println("Список співробітників компанії " + company.getName() + " (всього позицій: " + company.size() + "):");
+        for (int i = 0; i < company.size(); i++) {
+            Employee emp = company.getEmployees().get(i);
+            int qty = company.getQuantity(i);
+            System.out.println(emp + " | Кількість: " + qty);
         }
     }
 }
