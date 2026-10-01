@@ -3,21 +3,21 @@ package com.example;
 import java.util.Objects;
 
 /**
- * єЫРб ЮЯШбгф даШЫРЭбХаР, пЪШЩ ТШЪЮЭгф ЪЮЭваРЪвЭц аЮСЮвШ Ч дцЪбЮТРЭЮо ЯЮУЮФШЭЭЮо бвРТЪЮо.
+ * РљР»Р°СЃ РѕРїРёСЃСѓС” С„СЂРёР»Р°РЅСЃРµСЂР° Р· С„С–РєСЃРѕРІР°РЅРѕСЋ РїРѕРіРѕРґРёРЅРЅРѕСЋ СЃС‚Р°РІРєРѕСЋ.
  */
 public class Freelancer extends ContractEmployee {
     private double hourlyRate;
 
     /**
-     * єЮЭбвагЪвЮа даШЫРЭбХаР.
+     * РљРѕРЅСЃС‚СЂСѓРєС‚РѕСЂ С„СЂРёР»Р°РЅСЃРµСЂР°.
      *
-     * @param name                   цЬ'п
-     * @param position               ЯЮбРФР
-     * @param salary                 СРЧЮТР ЮЯЫРвР
-     * @param experienceYears        бвРЦ
-     * @param department             ТцФФцЫ
-     * @param contractDurationMonths ваШТРЫцбвм ЪЮЭваРЪвг Т Ьцбпжпе
-     * @param hourlyRate             ЯЮУЮФШЭЭР бвРТЪР
+     * @param name С–Рј'СЏ
+     * @param position РїРѕСЃР°РґР°
+     * @param salary Р±Р°Р·РѕРІР° СЃС‚Р°РІРєР°
+     * @param experienceYears СЃС‚Р°Р¶
+     * @param department РІС–РґРґС–Р»
+     * @param contractDurationMonths С‚СЂРёРІР°Р»С–СЃС‚СЊ РєРѕРЅС‚СЂР°РєС‚Сѓ РІ РјС–СЃСЏС†СЏС…
+     * @param hourlyRate РїРѕРіРѕРґРёРЅРЅР° СЃС‚Р°РІРєР°
      */
     public Freelancer(String name, String position, double salary, int experienceYears, Department department, int contractDurationMonths, double hourlyRate) {
         super(name, position, salary, experienceYears, department, contractDurationMonths);
@@ -30,9 +30,14 @@ public class Freelancer extends ContractEmployee {
 
     public void setHourlyRate(double hourlyRate) {
         if (hourlyRate <= 0) {
-            throw new IllegalArgumentException("їЮУЮФШЭЭР бвРТЪР ЯЮТШЭЭР СгвШ СцЫмиЮо ЧР ЭгЫм");
+            throw new IllegalArgumentException("РџРѕРіРѕРґРёРЅРЅР° СЃС‚Р°РІРєР° РїРѕРІРёРЅРЅР° Р±СѓС‚Рё Р±С–Р»СЊС€РѕСЋ Р·Р° РЅСѓР»СЊ");
         }
         this.hourlyRate = hourlyRate;
+    }
+
+    @Override
+    public String toFileString() {
+        return "FREELANCER;" + getName() + ";" + getPosition() + ";" + getSalary() + ";" + getExperienceYears() + ";" + getDepartment().name() + ";" + getContractDurationMonths() + ";" + hourlyRate;
     }
 
     @Override
@@ -51,12 +56,7 @@ public class Freelancer extends ContractEmployee {
 
     @Override
     public String toString() {
-        return String.format("Freelancer { ¦Ь'п: '%s', їЮбРФР: '%s', ·РаЯЫРвР: %.2f УаЭ, БвРЦ: %d а., ІцФФцЫ: %s, єЮЭваРЪв: %d Ьцб., БвРТЪР: %.2f УаЭ/УЮФ }",
+        return String.format("Freelancer { Р†Рј'СЏ: '%s', РџРѕСЃР°РґР°: '%s', Р—Р°СЂРїР»Р°С‚Р°: %.2f РіСЂРЅ, РЎС‚Р°Р¶: %d СЂ., Р’С–РґРґС–Р»: %s, РљРѕРЅС‚СЂР°РєС‚: %d РјС–СЃ., РЎС‚Р°РІРєР°: %.2f РіСЂРЅ/РіРѕРґ }",
                 getName(), getPosition(), getSalary(), getExperienceYears(), getDepartment().getTitle(), getContractDurationMonths(), hourlyRate);
-    }
-	
-	@Override
-    public String toFileString() {
-        return "FREELANCER;" + getName() + ";" + getPosition() + ";" + getSalary() + ";" + getExperienceYears() + ";" + getDepartment().name() + ";" + getContractDurationMonths() + ";" + hourlyRate;
     }
 }
