@@ -58,9 +58,5 @@ public class ContractEmployee extends Employee {
     public String toFileString() {
         return "CONTRACT;" + getName() + ";" + getPosition() + ";" + getSalary() + ";" + getExperienceYears() + ";" + getDepartment().name() + ";" + contractDurationMonths;
     }
-	
-	@Override
-    public String toFileString() {
-        return "CONTRACT;" + getName() + ";" + getPosition() + ";" + getSalary() + ";" + getExperienceYears() + ";" + getDepartment().name() + ";" + contractDurationMonths;
-    }
+
 }
