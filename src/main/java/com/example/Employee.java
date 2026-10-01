@@ -100,6 +100,15 @@ public class Employee {
         this.department = department;
     }
 
+    /**
+     * Формує рядок для збереження в текстовий файл input.txt.
+     *
+     * @return текстове представлення об'єкта
+     */
+    public String toFileString() {
+        return "EMPLOYEE;" + name + ";" + position + ";" + salary + ";" + experienceYears + ";" + department.name();
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -120,10 +129,6 @@ public class Employee {
     @Override
     public String toString() {
         return String.format("Employee { Ім'я: '%s', Посада: '%s', Зарплата: %.2f грн, Стаж: %d р., Відділ: %s }",
-                             name, position, salary, experienceYears, department.getTitle());
-    }
-	
-	public String toFileString() {
-        return "EMPLOYEE;" + name + ";" + position + ";" + salary + ";" + experienceYears + ";" + department.name();
+                name, position, salary, experienceYears, department.getTitle());
     }
 }

@@ -1,0 +1,12 @@
+[
+  {
+    "hourlyRate": 5.0,
+    "contractDurationMonths": 12,
+    "name": "Сергій",
+    "position": "Головний",
+    "salary": 10000.0,
+    "experienceYears": 5,
+    "department": "FINANCE",
+    "classType": "Freelancer"
+  }
+]
