@@ -122,4 +122,8 @@ public class Employee {
         return String.format("Employee { Ім'я: '%s', Посада: '%s', Зарплата: %.2f грн, Стаж: %d р., Відділ: %s }",
                              name, position, salary, experienceYears, department.getTitle());
     }
+	
+	public String toFileString() {
+        return "EMPLOYEE;" + name + ";" + position + ";" + salary + ";" + experienceYears + ";" + department.name();
+    }
 }

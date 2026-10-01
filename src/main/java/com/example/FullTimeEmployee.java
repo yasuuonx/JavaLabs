@@ -53,4 +53,9 @@ public class FullTimeEmployee extends Employee {
         return String.format("FullTimeEmployee { Ім'я: '%s', Посада: '%s', Зарплата: %.2f грн, Стаж: %d р., Відділ: %s, Бонус: %.2f грн }",
                              getName(), getPosition(), getSalary(), getExperienceYears(), getDepartment().getTitle(), annualBonus);
     }
+	
+	@Override
+    public String toFileString() {
+        return "FULL_TIME;" + getName() + ";" + getPosition() + ";" + getSalary() + ";" + getExperienceYears() + ";" + getDepartment().name() + ";" + annualBonus;
+    }
 }

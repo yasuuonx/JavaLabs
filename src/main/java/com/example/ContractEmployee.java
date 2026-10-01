@@ -53,4 +53,14 @@ public class ContractEmployee extends Employee {
         return String.format("ContractEmployee { Ім'я: '%s', Посада: '%s', Зарплата: %.2f грн, Стаж: %d р., Відділ: %s, Контракт: %d міс. }",
                              getName(), getPosition(), getSalary(), getExperienceYears(), getDepartment().getTitle(), contractDurationMonths);
     }
+	
+	@Override
+    public String toFileString() {
+        return "CONTRACT;" + getName() + ";" + getPosition() + ";" + getSalary() + ";" + getExperienceYears() + ";" + getDepartment().name() + ";" + contractDurationMonths;
+    }
+	
+	@Override
+    public String toFileString() {
+        return "CONTRACT;" + getName() + ";" + getPosition() + ";" + getSalary() + ";" + getExperienceYears() + ";" + getDepartment().name() + ";" + contractDurationMonths;
+    }
 }

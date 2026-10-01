@@ -54,4 +54,9 @@ public class Manager extends FullTimeEmployee {
         return String.format("Manager { Ім'я: '%s', Посада: '%s', Зарплата: %.2f грн, Стаж: %d р., Відділ: %s, Бонус: %.2f грн, Команда: %d ос. }",
                 getName(), getPosition(), getSalary(), getExperienceYears(), getDepartment().getTitle(), getAnnualBonus(), teamSize);
     }
+	
+	@Override
+    public String toFileString() {
+        return "MANAGER;" + getName() + ";" + getPosition() + ";" + getSalary() + ";" + getExperienceYears() + ";" + getDepartment().name() + ";" + getAnnualBonus() + ";" + teamSize;
+    }
 }

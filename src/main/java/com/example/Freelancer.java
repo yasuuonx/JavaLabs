@@ -54,4 +54,9 @@ public class Freelancer extends ContractEmployee {
         return String.format("Freelancer { Ім'я: '%s', Посада: '%s', Зарплата: %.2f грн, Стаж: %d р., Відділ: %s, Контракт: %d міс., Ставка: %.2f грн/год }",
                 getName(), getPosition(), getSalary(), getExperienceYears(), getDepartment().getTitle(), getContractDurationMonths(), hourlyRate);
     }
+	
+	@Override
+    public String toFileString() {
+        return "FREELANCER;" + getName() + ";" + getPosition() + ";" + getSalary() + ";" + getExperienceYears() + ";" + getDepartment().name() + ";" + getContractDurationMonths() + ";" + hourlyRate;
+    }
 }
