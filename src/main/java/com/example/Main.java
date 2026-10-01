@@ -1,19 +1,22 @@
 package com.example;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Scanner;
 
 /**
- * Драйвер програми з ієрархічним консольним меню та поліморфною колекцією.
+ * Драйвер програми з інтерактивним меню, завантаженням та збереженням стану у файли.
  */
 public class Main {
+    private static final String TEXT_FILE = "input.txt";
+    private static final String JSON_FILE = "input.json";
 
     public static void main(String[] args) {
         printHeader();
 
+        ArrayList<Employee> employees = FileManager.loadFromTextFile(TEXT_FILE);
+        System.out.println("Завантажено об'єктів із файлу " + TEXT_FILE + ": " + employees.size());
+
         Scanner scanner = new Scanner(System.in);
-        List<Employee> employees = new ArrayList<>();
         boolean isRunning = true;
 
         while (isRunning) {
@@ -34,6 +37,9 @@ public class Main {
                     displayAllEmployees(employees);
                     break;
                 case "3":
+                    FileManager.saveToTextFile(TEXT_FILE, employees);
+                    FileManager.saveToJsonFile(JSON_FILE, employees);
+                    System.out.println("Дані успішно збережено у файли " + TEXT_FILE + " та " + JSON_FILE);
                     isRunning = false;
                     System.out.println("Роботу програми завершено.");
                     break;
@@ -47,12 +53,12 @@ public class Main {
     }
 
     private static void printHeader() {
-        System.out.println("Практична робота №8");
-        System.out.println("Тема: Розширення ієрархії класів, поліморфізм, меню створення об'єктів");
+        System.out.println("Практична робота №9");
+        System.out.println("Тема: Ієрархія успадкування, робота з файлами для зберігання інформації");
         System.out.println("Виконав: студент Демченко Станіслав");
     }
 
-    private static void handleCreateObjectMenu(Scanner scanner, List<Employee> list) {
+    private static void handleCreateObjectMenu(Scanner scanner, ArrayList<Employee> list) {
         System.out.println();
         System.out.println("Оберіть тип об'єкта для створення:");
         System.out.println("1. Базовий співробітник (Employee)");
@@ -141,14 +147,14 @@ public class Main {
         }
     }
 
-    private static void displayAllEmployees(List<Employee> list) {
+    private static void displayAllEmployees(ArrayList<Employee> list) {
         if (list.isEmpty()) {
             System.out.println("Колекція порожня. Додайте об'єкти через меню створення.");
             return;
         }
 
         System.out.println();
-        System.out.println("Список зареєстрованих об'єктів у колекції (Поліморфізм, всього: " + list.size() + "):");
+        System.out.println("Список зареєстрованих об'єктів у колекції (всього: " + list.size() + "):");
         for (Employee emp : list) {
             System.out.println(emp);
         }
