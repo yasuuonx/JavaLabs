@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 /**
- * Драйвер програми з інтеграцією класу-контейнера Company.
+ * Драйвер програми з підтримкою меню сортування об'єктів через Comparable.
  */
 public class Main {
     private static final String TEXT_FILE = "input.txt";
@@ -24,7 +24,8 @@ public class Main {
             System.out.println("1. Пошук об'єкта");
             System.out.println("2. Створити новий об'єкт (додати до компанії)");
             System.out.println("3. Вивести інформацію про всі об'єкти");
-            System.out.println("4. Завершити роботу програми");
+            System.out.println("4. Вивести відсортовану інформацію про всі об'єкти");
+            System.out.println("5. Завершити роботу програми");
             System.out.print("Оберіть дію: ");
 
             String choice = scanner.nextLine().trim();
@@ -40,13 +41,16 @@ public class Main {
                     displayAllEmployees(company);
                     break;
                 case "4":
+                    displaySortedEmployees(company);
+                    break;
+                case "5":
                     FileManager.saveCompanyToFile(TEXT_FILE, company);
                     System.out.println("Дані компанії збережено у файл " + TEXT_FILE);
                     isRunning = false;
                     System.out.println("Роботу програми завершено.");
                     break;
                 default:
-                    System.out.println("Помилка: невідома опція меню. Оберіть пункт від 1 до 4.");
+                    System.out.println("Помилка: невідома опція меню. Оберіть пункт від 1 до 5.");
                     break;
             }
         }
@@ -55,9 +59,23 @@ public class Main {
     }
 
     private static void printHeader() {
-        System.out.println("Практична робота №11");
-        System.out.println("Тема: Колекції, агрегація, класи-обгортки");
+        System.out.println("Практична робота №13");
+        System.out.println("Тема: Abstract classes, interfaces, interface Comparable");
         System.out.println("Виконав: студент Демченко Станіслав");
+    }
+
+    private static void displaySortedEmployees(Company company) {
+        if (company.size() == 0) {
+            System.out.println("Колекція компанії порожня. Немає об'єктів для сортування.");
+            return;
+        }
+
+        ArrayList<Employee> sortedList = company.getSortedEmployees();
+        System.out.println();
+        System.out.println("Відсортований список співробітників за алфавітом (всього: " + sortedList.size() + "):");
+        for (Employee emp : sortedList) {
+            System.out.println(emp);
+        }
     }
 
     private static void handleSearchMenu(Scanner scanner, Company company) {
@@ -131,12 +149,11 @@ public class Main {
 
     private static void handleCreateObjectMenu(Scanner scanner, Company company) {
         System.out.println();
-        System.out.println("Оберіть тип об'єкта для створення:");
-        System.out.println("1. Базовий співробітник (Employee)");
-        System.out.println("2. Штатний співробітник (FullTimeEmployee)");
-        System.out.println("3. Контрактний співробітник (ContractEmployee)");
-        System.out.println("4. Менеджер (Manager)");
-        System.out.println("5. Фрилансер (Freelancer)");
+        System.out.println("Оберіть підклас об'єкта для створення:");
+        System.out.println("1. Штатний співробітник (FullTimeEmployee)");
+        System.out.println("2. Контрактний співробітник (ContractEmployee)");
+        System.out.println("3. Менеджер (Manager)");
+        System.out.println("4. Фрилансер (Freelancer)");
         System.out.println("0. Повернутися до головного меню");
         System.out.print("Ваш вибір: ");
 
@@ -169,26 +186,23 @@ public class Main {
 
             switch (typeChoice) {
                 case "1":
-                    createdEmployee = new Employee(name, position, salary, experience, department);
-                    break;
-                case "2":
                     System.out.print("Введіть розмір річного бонусу: ");
                     double bonus = Double.parseDouble(scanner.nextLine().trim());
                     createdEmployee = new FullTimeEmployee(name, position, salary, experience, department, bonus);
                     break;
-                case "3":
+                case "2":
                     System.out.print("Введіть тривалість контракту (місяців): ");
                     int duration = Integer.parseInt(scanner.nextLine().trim());
                     createdEmployee = new ContractEmployee(name, position, salary, experience, department, duration);
                     break;
-                case "4":
+                case "3":
                     System.out.print("Введіть розмір річного бонусу: ");
                     double mgrBonus = Double.parseDouble(scanner.nextLine().trim());
                     System.out.print("Введіть кількість підлеглих у команді: ");
                     int teamSize = Integer.parseInt(scanner.nextLine().trim());
                     createdEmployee = new Manager(name, position, salary, experience, department, mgrBonus, teamSize);
                     break;
-                case "5":
+                case "4":
                     System.out.print("Введіть тривалість контракту (місяців): ");
                     int flDuration = Integer.parseInt(scanner.nextLine().trim());
                     System.out.print("Введіть погодинну ставку (грн/год): ");
