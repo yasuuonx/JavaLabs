@@ -6,13 +6,13 @@ import java.util.ArrayList;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
- * Тести для перевірки агрегації Company, кількості об'єктів та пошуку.
+ * Тести для перевірки абстрактного класу, агрегації Company та інтерфейсу Comparable.
  */
 class EmployeeTest {
 
     @Test
     void shouldThrowExceptionWhenInvalidValueInSetter() {
-        Employee employee = new Employee("Олексій", "Інженер", 30000.0, 2, Department.IT);
+        Employee employee = new FullTimeEmployee("Олексій", "Інженер", 30000.0, 2, Department.IT, 5000.0);
 
         assertThrows(IllegalArgumentException.class, () -> employee.setSalary(-1000.0));
         assertThrows(IllegalArgumentException.class, () -> employee.setExperienceYears(-3));
@@ -24,8 +24,8 @@ class EmployeeTest {
     @Test
     void shouldIncreaseQuantityWhenAddingExistingEmployee() {
         Company company = new Company("Test Corp");
-        Employee emp1 = new Employee("Іван", "Стажер", 15000.0, 1, Department.HR);
-        Employee emp2 = new Employee("Іван", "Стажер", 15000.0, 1, Department.HR);
+        Employee emp1 = new FullTimeEmployee("Іван", "Стажер", 15000.0, 1, Department.HR, 1000.0);
+        Employee emp2 = new FullTimeEmployee("Іван", "Стажер", 15000.0, 1, Department.HR, 1000.0);
 
         company.addNewEmployee(emp1, 2);
         company.addNewEmployee(emp2, 3);
@@ -35,27 +35,45 @@ class EmployeeTest {
     }
 
     @Test
-    void shouldCorrectlySearchUsingCompanyMethods() {
+    void shouldCorrectlySortEmployeesUsingComparable() {
         Company company = new Company("Test Corp");
-        company.addNewEmployee(new Employee("Олександр", "Java Розробник", 45000.0, 3, Department.IT), 1);
-        company.addNewEmployee(new FullTimeEmployee("Ірина", "HR Менеджер", 30000.0, 2, Department.HR, 5000.0), 2);
-        company.addNewEmployee(new Manager("Богдан", "Senior Менеджер", 80000.0, 7, Department.IT, 15000.0, 8), 1);
+        Employee empZ = new FullTimeEmployee("Ярослав", "Розробник", 60000.0, 4, Department.IT, 5000.0);
+        Employee empA = new FullTimeEmployee("Андрій", "Тестувальник", 35000.0, 2, Department.IT, 2000.0);
+        Employee empB = new Manager("Богдан", "Керівник", 85000.0, 7, Department.FINANCE, 15000.0, 6);
 
-        ArrayList<Employee> foundByPosition = company.searchByPosition("розробник");
-        assertEquals(1, foundByPosition.size());
+        company.addNewEmployee(empZ, 1);
+        company.addNewEmployee(empA, 1);
+        company.addNewEmployee(empB, 1);
 
-        ArrayList<Employee> foundBySalary = company.searchBySalaryRange(25000.0, 50000.0);
-        assertEquals(2, foundBySalary.size());
+        ArrayList<Employee> sorted = company.getSortedEmployees();
 
-        ArrayList<Employee> foundByDept = company.searchByDepartment(Department.IT);
-        assertEquals(2, foundByDept.size());
+        assertEquals(3, sorted.size());
+        assertEquals("Андрій", sorted.get(0).getName());
+        assertEquals("Богдан", sorted.get(1).getName());
+        assertEquals("Ярослав", sorted.get(2).getName());
+
+        // Перевірка, що початковий список у компанії не змінив порядок
+        assertEquals("Ярослав", company.getEmployees().get(0).getName());
+    }
+
+    @Test
+    void shouldHandleSortingForEmptyAndSingleElementList() {
+        Company emptyCompany = new Company("Empty Corp");
+        ArrayList<Employee> emptySorted = emptyCompany.getSortedEmployees();
+        assertTrue(emptySorted.isEmpty());
+
+        Company singleCompany = new Company("Single Corp");
+        singleCompany.addNewEmployee(new FullTimeEmployee("Василь", "Адмін", 40000.0, 3, Department.IT, 3000.0), 1);
+        ArrayList<Employee> singleSorted = singleCompany.getSortedEmployees();
+        assertEquals(1, singleSorted.size());
+        assertEquals("Василь", singleSorted.get(0).getName());
     }
 
     @Test
     void shouldCorrectlySaveAndLoadCompanyFromFile() {
-        String testFileName = "test_company_input.txt";
+        String testFileName = "test_company_input_13.txt";
         Company originalCompany = new Company("AlphaSoft");
-        originalCompany.addNewEmployee(new Employee("Тарас", "Аналітик", 35000.0, 2, Department.FINANCE), 3);
+        originalCompany.addNewEmployee(new FullTimeEmployee("Тарас", "Аналітик", 35000.0, 2, Department.FINANCE, 4000.0), 3);
         originalCompany.addNewEmployee(new Manager("Олена", "Директор", 95000.0, 9, Department.IT, 20000.0, 12), 1);
 
         FileManager.saveCompanyToFile(testFileName, originalCompany);
