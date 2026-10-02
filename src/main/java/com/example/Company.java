@@ -1,9 +1,10 @@
 package com.example;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 /**
- * Клас-контейнер, який агрегує колекцію співробітників та веде облік їх кількості.
+ * Клас-контейнер, який агрегує колекцію співробітників та підтримує сортування.
  */
 public class Company {
     private String name;
@@ -33,10 +34,10 @@ public class Company {
     }
 
     /**
-     * Додає співробітника або збільшує кількість, якщо такий уже існує.
+     * Додає співробітника або збільшує кількість, якщо такий уже є в колекції.
      *
      * @param emp      об'єкт співробітника
-     * @param quantity кількість для додавання
+     * @param quantity кількість штатних позицій
      */
     public void addNewEmployee(Employee emp, int quantity) {
         if (emp == null) {
@@ -73,6 +74,17 @@ public class Company {
 
     public int size() {
         return employees.size();
+    }
+
+    /**
+     * Повертає відсортовану копію списку співробітників за Comparable без мутації оригінального списку.
+     *
+     * @return новий відсортований список співробітників
+     */
+    public ArrayList<Employee> getSortedEmployees() {
+        ArrayList<Employee> sortedList = new ArrayList<Employee>(this.employees);
+        Collections.sort(sortedList);
+        return sortedList;
     }
 
     /**
