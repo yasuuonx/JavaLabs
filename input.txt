@@ -1,1 +1,3 @@
-FREELANCER;Сергій;Головний;10000.0;5;FINANCE;12;5.0
+COMPANY;Default Company
+MANAGER;Сергій;Менеджер;20000.0;2;IT;3000.0;4;1
+FREELANCER;Дмитро;Фрилансер;15000.0;2;IT;6;200.0;10

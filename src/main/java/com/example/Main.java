@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 /**
- * Драйвер програми з інтеграцією класу-контейнера Company.
+ * Драйвер програми з інтеграцією збереження в базу даних через JDBC.
  */
 public class Main {
     private static final String TEXT_FILE = "input.txt";
@@ -12,6 +12,13 @@ public class Main {
     public static void main(String[] args) {
         printHeader();
 
+        String configPath = "db.properties";
+        if (args.length > 0 && args[0] != null && !args[0].trim().isEmpty()) {
+            configPath = args[0].trim();
+        }
+        System.out.println("Конфігураційний файл БД: " + configPath);
+
+        DatabaseManager dbManager = new DatabaseManager(configPath);
         Company company = FileManager.loadCompanyFromFile(TEXT_FILE);
         System.out.println("Компанія: " + company.getName() + ", завантажено унікальних позицій: " + company.size());
 
@@ -22,7 +29,7 @@ public class Main {
             System.out.println();
             System.out.println("Головне меню (" + company.getName() + "):");
             System.out.println("1. Пошук об'єкта");
-            System.out.println("2. Створити новий об'єкт (додати до компанії)");
+            System.out.println("2. Створити новий об'єкт (додати до компанії та БД)");
             System.out.println("3. Вивести інформацію про всі об'єкти");
             System.out.println("4. Завершити роботу програми");
             System.out.print("Оберіть дію: ");
@@ -34,7 +41,7 @@ public class Main {
                     handleSearchMenu(scanner, company);
                     break;
                 case "2":
-                    handleCreateObjectMenu(scanner, company);
+                    handleCreateObjectMenu(scanner, company, dbManager);
                     break;
                 case "3":
                     displayAllEmployees(company);
@@ -55,8 +62,8 @@ public class Main {
     }
 
     private static void printHeader() {
-        System.out.println("Практична робота №11");
-        System.out.println("Тема: Колекції, агрегація, класи-обгортки");
+        System.out.println("Практична робота №12");
+        System.out.println("Тема: Збереження даних у базі даних (JDBC)");
         System.out.println("Виконав: студент Демченко Станіслав");
     }
 
@@ -129,7 +136,7 @@ public class Main {
         }
     }
 
-    private static void handleCreateObjectMenu(Scanner scanner, Company company) {
+    private static void handleCreateObjectMenu(Scanner scanner, Company company, DatabaseManager dbManager) {
         System.out.println();
         System.out.println("Оберіть тип об'єкта для створення:");
         System.out.println("1. Базовий співробітник (Employee)");
@@ -201,7 +208,10 @@ public class Main {
             }
 
             company.addNewEmployee(createdEmployee, quantity);
-            System.out.println("Об'єкт успішно додано/оновлено у компанії " + company.getName());
+            System.out.println("Об'єкт успішно додано до колекції компанії.");
+
+            dbManager.saveEmployee(createdEmployee);
+
         } catch (NumberFormatException e) {
             System.out.println("Помилка введення: для числових даних введіть коректне число.");
         } catch (IllegalArgumentException e) {
