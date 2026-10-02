@@ -3,9 +3,10 @@ package com.example;
 import java.util.Objects;
 
 /**
- * Базовий клас описує співробітника підприємства.
+ * Абстрактний базовий клас співробітника підприємства.
+ * Реалізує інтерфейс Comparable для стабільного порівняння та сортування за ПІБ.
  */
-public class Employee {
+public abstract class Employee implements Comparable<Employee> {
     private String name;
     private String position;
     private double salary;
@@ -13,7 +14,7 @@ public class Employee {
     private Department department;
 
     /**
-     * Конструктор з параметрами та валідацією через сетери.
+     * Конструктор з параметрами та валідацією.
      *
      * @param name            ім'я співробітника
      * @param position        посада співробітника
@@ -32,7 +33,7 @@ public class Employee {
     /**
      * Конструктор копіювання.
      *
-     * @param other об'єкт Employee для клонування
+     * @param other об'єкт Employee для копіювання
      */
     public Employee(Employee other) {
         if (other == null) {
@@ -101,7 +102,25 @@ public class Employee {
     }
 
     /**
-     * Формує рядок для збереження в текстовий файл input.txt.
+     * Порівняння об'єктів для сортування за алфавітом (ПІБ), а при збігу — за посадою.
+     *
+     * @param other інший співробітник для порівняння
+     * @return результат лексикографічного порівняння
+     */
+    @Override
+    public int compareTo(Employee other) {
+        if (other == null) {
+            return 1;
+        }
+        int nameComparison = this.name.compareToIgnoreCase(other.name);
+        if (nameComparison != 0) {
+            return nameComparison;
+        }
+        return this.position.compareToIgnoreCase(other.position);
+    }
+
+    /**
+     * Формує текстовий рядок для збереження у файл.
      *
      * @return текстове представлення об'єкта
      */
