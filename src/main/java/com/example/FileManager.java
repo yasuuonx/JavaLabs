@@ -57,8 +57,8 @@ public class FileManager {
 
                     switch (type) {
                         case "EMPLOYEE":
-                            employee = new Employee(name, position, salary, experience, department);
                             quantity = Integer.parseInt(parts[6]);
+                            employee = new FullTimeEmployee(name, position, salary, experience, department, 0.0);
                             break;
                         case "FULL_TIME":
                             double bonus = Double.parseDouble(parts[6]);
