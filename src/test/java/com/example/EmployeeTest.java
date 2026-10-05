@@ -7,7 +7,7 @@ import java.util.Comparator;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
- * Тести для перевірки агрегації Company та сортування через анонімні класи Comparator.
+ * Тести для перевірки агрегації Company та сортування через лямбда-вирази Comparator.
  */
 class EmployeeTest {
 
@@ -36,18 +36,13 @@ class EmployeeTest {
     }
 
     @Test
-    void shouldCorrectlySortBySalaryDescendingUsingAnonymousComparator() {
+    void shouldCorrectlySortBySalaryDescendingUsingLambda() {
         Company company = new Company("Test Corp");
         company.addNewEmployee(new FullTimeEmployee("Андрій", "Інженер", 25000.0, 2, Department.IT, 1000.0), 1);
         company.addNewEmployee(new FullTimeEmployee("Богдан", "Lead", 80000.0, 6, Department.IT, 5000.0), 1);
         company.addNewEmployee(new FullTimeEmployee("Віктор", "Middle", 50000.0, 4, Department.IT, 3000.0), 1);
 
-        Comparator<Employee> salaryDescComparator = new Comparator<Employee>() {
-            @Override
-            public int compare(Employee o1, Employee o2) {
-                return Double.compare(o2.getSalary(), o1.getSalary());
-            }
-        };
+        Comparator<Employee> salaryDescComparator = (o1, o2) -> Double.compare(o2.getSalary(), o1.getSalary());
 
         ArrayList<Employee> sorted = company.getSortedEmployees(salaryDescComparator);
         assertEquals(80000.0, sorted.get(0).getSalary());
@@ -56,18 +51,13 @@ class EmployeeTest {
     }
 
     @Test
-    void shouldCorrectlySortByExperienceAscendingUsingAnonymousComparator() {
+    void shouldCorrectlySortByExperienceAscendingUsingLambda() {
         Company company = new Company("Test Corp");
         company.addNewEmployee(new FullTimeEmployee("Богдан", "Lead", 80000.0, 7, Department.IT, 5000.0), 1);
         company.addNewEmployee(new FullTimeEmployee("Андрій", "Junior", 20000.0, 1, Department.IT, 1000.0), 1);
         company.addNewEmployee(new FullTimeEmployee("Віктор", "Middle", 50000.0, 4, Department.IT, 3000.0), 1);
 
-        Comparator<Employee> expAscComparator = new Comparator<Employee>() {
-            @Override
-            public int compare(Employee o1, Employee o2) {
-                return Integer.compare(o1.getExperienceYears(), o2.getExperienceYears());
-            }
-        };
+        Comparator<Employee> expAscComparator = (o1, o2) -> Integer.compare(o1.getExperienceYears(), o2.getExperienceYears());
 
         ArrayList<Employee> sorted = company.getSortedEmployees(expAscComparator);
         assertEquals(1, sorted.get(0).getExperienceYears());
@@ -76,18 +66,13 @@ class EmployeeTest {
     }
 
     @Test
-    void shouldCorrectlySortByDepartmentUsingAnonymousComparator() {
+    void shouldCorrectlySortByDepartmentUsingLambda() {
         Company company = new Company("Test Corp");
         company.addNewEmployee(new FullTimeEmployee("Іван", "Маркетолог", 30000.0, 2, Department.MARKETING, 1000.0), 1);
         company.addNewEmployee(new FullTimeEmployee("Олег", "Рекрутер", 25000.0, 1, Department.HR, 500.0), 1);
         company.addNewEmployee(new FullTimeEmployee("Максим", "Фінансист", 40000.0, 5, Department.FINANCE, 2000.0), 1);
 
-        Comparator<Employee> deptComparator = new Comparator<Employee>() {
-            @Override
-            public int compare(Employee o1, Employee o2) {
-                return o1.getDepartment().getTitle().compareToIgnoreCase(o2.getDepartment().getTitle());
-            }
-        };
+        Comparator<Employee> deptComparator = (o1, o2) -> o1.getDepartment().getTitle().compareToIgnoreCase(o2.getDepartment().getTitle());
 
         ArrayList<Employee> sorted = company.getSortedEmployees(deptComparator);
         assertEquals(Department.HR, sorted.get(0).getDepartment());
@@ -97,7 +82,7 @@ class EmployeeTest {
 
     @Test
     void shouldCorrectlySaveAndLoadCompanyFromFile() {
-        String testFileName = "test_company_input_14.txt";
+        String testFileName = "test_company_input_15.txt";
         Company originalCompany = new Company("AlphaSoft");
         originalCompany.addNewEmployee(new FullTimeEmployee("Тарас", "Аналітик", 35000.0, 2, Department.FINANCE, 4000.0), 3);
         originalCompany.addNewEmployee(new Manager("Олена", "Директор", 95000.0, 9, Department.IT, 20000.0, 12), 1);
