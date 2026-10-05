@@ -1,25 +1,21 @@
 package com.example;
 
 import java.util.Objects;
+import java.util.UUID;
 
 /**
- * Клас описує штатного співробітника підприємства з фіксованим бонусом.
+ * Клас описує штатного працівника з річним бонусом.
  */
 public class FullTimeEmployee extends Employee {
     private double annualBonus;
 
-    /**
-     * Конструктор штатного співробітника.
-     *
-     * @param name            ім'я
-     * @param position        посада
-     * @param salary          ставка зарплати
-     * @param experienceYears стаж
-     * @param department      відділ
-     * @param annualBonus     річний бонус
-     */
     public FullTimeEmployee(String name, String position, double salary, int experienceYears, Department department, double annualBonus) {
         super(name, position, salary, experienceYears, department);
+        setAnnualBonus(annualBonus);
+    }
+
+    public FullTimeEmployee(UUID uuid, String name, String position, double salary, int experienceYears, Department department, double annualBonus) {
+        super(uuid, name, position, salary, experienceYears, department);
         setAnnualBonus(annualBonus);
     }
 
@@ -32,6 +28,11 @@ public class FullTimeEmployee extends Employee {
             throw new IllegalArgumentException("Річний бонус не може бути від'ємним");
         }
         this.annualBonus = annualBonus;
+    }
+
+    @Override
+    public String toFileString() {
+        return "FULL_TIME;" + getUuid() + ";" + getName() + ";" + getPosition() + ";" + getSalary() + ";" + getExperienceYears() + ";" + getDepartment().name() + ";" + annualBonus;
     }
 
     @Override
@@ -50,12 +51,7 @@ public class FullTimeEmployee extends Employee {
 
     @Override
     public String toString() {
-        return String.format("FullTimeEmployee { Ім'я: '%s', Посада: '%s', Зарплата: %.2f грн, Стаж: %d р., Відділ: %s, Бонус: %.2f грн }",
-                             getName(), getPosition(), getSalary(), getExperienceYears(), getDepartment().getTitle(), annualBonus);
-    }
-	
-	@Override
-    public String toFileString() {
-        return "FULL_TIME;" + getName() + ";" + getPosition() + ";" + getSalary() + ";" + getExperienceYears() + ";" + getDepartment().name() + ";" + annualBonus;
+        return String.format("FullTimeEmployee { UUID: %s, Ім'я: '%s', Посада: '%s', Зарплата: %.2f грн, Стаж: %d р., Відділ: %s, Річний бонус: %.2f грн }",
+                getUuid(), getName(), getPosition(), getSalary(), getExperienceYears(), getDepartment().getTitle(), annualBonus);
     }
 }

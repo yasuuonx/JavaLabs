@@ -1,26 +1,21 @@
 package com.example;
 
 import java.util.Objects;
+import java.util.UUID;
 
 /**
- * –ö–ª–∞—Å –æ–ø–∏—Å—É—î —Ñ—Ä–∏–ª–∞–Ω—Å–µ—Ä–∞ –∑ —Ñ—ñ–∫—Å–æ–≤–∞–Ω–æ—é –ø–æ–≥–æ–¥–∏–Ω–Ω–æ—é —Å—Ç–∞–≤–∫–æ—é.
+ * ∫€–· ﬁﬂÿ·„Ù ‰‡ÿ€–›·’‡– ◊ ﬂﬁ”ﬁ‘ÿ››ﬁÓ ·‚–“⁄ﬁÓ.
  */
 public class Freelancer extends ContractEmployee {
     private double hourlyRate;
 
-    /**
-     * –ö–æ–Ω—Å—Ç—Ä—É–∫—Ç–æ—Ä —Ñ—Ä–∏–ª–∞–Ω—Å–µ—Ä–∞.
-     *
-     * @param name —ñ–º'—è
-     * @param position –ø–æ—Å–∞–¥–∞
-     * @param salary –±–∞–∑–æ–≤–∞ —Å—Ç–∞–≤–∫–∞
-     * @param experienceYears —Å—Ç–∞–∂
-     * @param department –≤—ñ–¥–¥—ñ–ª
-     * @param contractDurationMonths —Ç—Ä–∏–≤–∞–ª—ñ—Å—Ç—å –∫–æ–Ω—Ç—Ä–∞–∫—Ç—É –≤ –º—ñ—Å—è—Ü—è—Ö
-     * @param hourlyRate –ø–æ–≥–æ–¥–∏–Ω–Ω–∞ —Å—Ç–∞–≤–∫–∞
-     */
     public Freelancer(String name, String position, double salary, int experienceYears, Department department, int contractDurationMonths, double hourlyRate) {
         super(name, position, salary, experienceYears, department, contractDurationMonths);
+        setHourlyRate(hourlyRate);
+    }
+
+    public Freelancer(UUID uuid, String name, String position, double salary, int experienceYears, Department department, int contractDurationMonths, double hourlyRate) {
+        super(uuid, name, position, salary, experienceYears, department, contractDurationMonths);
         setHourlyRate(hourlyRate);
     }
 
@@ -30,14 +25,14 @@ public class Freelancer extends ContractEmployee {
 
     public void setHourlyRate(double hourlyRate) {
         if (hourlyRate <= 0) {
-            throw new IllegalArgumentException("–ü–æ–≥–æ–¥–∏–Ω–Ω–∞ —Å—Ç–∞–≤–∫–∞ –ø–æ–≤–∏–Ω–Ω–∞ –±—É—Ç–∏ –±—ñ–ª—å—à–æ—é –∑–∞ –Ω—É–ª—å");
+            throw new IllegalArgumentException("øﬁ”ﬁ‘ÿ››– ·‚–“⁄– ﬂﬁ“ÿ››– —„‚ÿ —ˆ€ÏËﬁÓ ◊– ›„€Ï");
         }
         this.hourlyRate = hourlyRate;
     }
 
     @Override
     public String toFileString() {
-        return "FREELANCER;" + getName() + ";" + getPosition() + ";" + getSalary() + ";" + getExperienceYears() + ";" + getDepartment().name() + ";" + getContractDurationMonths() + ";" + hourlyRate;
+        return "FREELANCER;" + getUuid() + ";" + getName() + ";" + getPosition() + ";" + getSalary() + ";" + getExperienceYears() + ";" + getDepartment().name() + ";" + getContractDurationMonths() + ";" + hourlyRate;
     }
 
     @Override
@@ -56,7 +51,7 @@ public class Freelancer extends ContractEmployee {
 
     @Override
     public String toString() {
-        return String.format("Freelancer { –Ü–º'—è: '%s', –ü–æ—Å–∞–¥–∞: '%s', –ó–∞—Ä–ø–ª–∞—Ç–∞: %.2f –≥—Ä–Ω, –°—Ç–∞–∂: %d —Ä., –í—ñ–¥–¥—ñ–ª: %s, –ö–æ–Ω—Ç—Ä–∞–∫—Ç: %d –º—ñ—Å., –°—Ç–∞–≤–∫–∞: %.2f –≥—Ä–Ω/–≥–æ–¥ }",
-                getName(), getPosition(), getSalary(), getExperienceYears(), getDepartment().getTitle(), getContractDurationMonths(), hourlyRate);
+        return String.format("Freelancer { UUID: %s, ¶‹'Ô: '%s', øﬁ·–‘–: '%s', ∑–‡ﬂ€–‚–: %.2f ”‡›, ¡‚–÷: %d ‡., ≤ˆ‘‘ˆ€: %s, ∫ﬁ›‚‡–⁄‚: %d ‹ˆ·., ¡‚–“⁄–: %.2f ”‡›/”ﬁ‘ }",
+                getUuid(), getName(), getPosition(), getSalary(), getExperienceYears(), getDepartment().getTitle(), getContractDurationMonths(), hourlyRate);
     }
 }

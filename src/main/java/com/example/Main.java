@@ -3,9 +3,10 @@ package com.example;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Scanner;
+import java.util.UUID;
 
 /**
- * Драйвер програми з інтерактивним меню, підтримкою сортування через лямбда-вирази Comparator.
+ * Консольний інтерфейс програми з підтримкою UUID та пошуку за ідентифікатором.
  */
 public class Main {
     private static final String TEXT_FILE = "input.txt";
@@ -60,8 +61,8 @@ public class Main {
     }
 
     private static void printHeader() {
-        System.out.println("Лабораторна робота №15");
-        System.out.println("Тема: Lambda expressions");
+        System.out.println("Лабораторна робота №16");
+        System.out.println("Тема: UUID + JavaFX GUI");
         System.out.println("Виконав: студент Демченко Станіслав");
     }
 
@@ -124,6 +125,7 @@ public class Main {
         System.out.println("1. Пошук за посадою");
         System.out.println("2. Пошук за діапазоном заробітної плати");
         System.out.println("3. Пошук за відділом компанії");
+        System.out.println("4. Пошук за UUID");
         System.out.println("0. Повернутися до головного меню");
         System.out.print("Ваш вибір: ");
 
@@ -159,6 +161,22 @@ public class Main {
                     displaySearchResults(departmentResults);
                 } catch (IllegalArgumentException e) {
                     System.out.println("Помилка: " + e.getMessage());
+                }
+                break;
+            case "4":
+                System.out.print("Введіть UUID: ");
+                String uuidString = scanner.nextLine().trim();
+                try {
+                    UUID searchUuid = UUID.fromString(uuidString);
+                    Employee found = company.findByUuid(searchUuid);
+                    if (found != null) {
+                        System.out.println("Об'єкт знайдено:");
+                        System.out.println(found);
+                    } else {
+                        System.out.println("Об'єкт з UUID '" + uuidString + "' не знайдено.");
+                    }
+                } catch (IllegalArgumentException e) {
+                    System.out.println("Помилка: некоректний формат UUID. Очікується рядок виду xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx");
                 }
                 break;
             case "0":
@@ -250,7 +268,7 @@ public class Main {
             }
 
             company.addNewEmployee(createdEmployee, quantity);
-            System.out.println("Об'єкт успішно додано/оновлено у компанії " + company.getName());
+            System.out.println("Об'єкт успішно додано. Його UUID: " + createdEmployee.getUuid());
         } catch (NumberFormatException e) {
             System.out.println("Помилка введення: для числових даних введіть коректне число.");
         } catch (IllegalArgumentException e) {
