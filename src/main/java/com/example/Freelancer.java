@@ -4,7 +4,7 @@ import java.util.Objects;
 import java.util.UUID;
 
 /**
- * ∫€–· ﬁﬂÿ·„Ù ‰‡ÿ€–›·’‡– ◊ ﬂﬁ”ﬁ‘ÿ››ﬁÓ ·‚–“⁄ﬁÓ.
+ * –ö–ª–∞—Å –æ–ø–∏—Å—É—î —Ñ—Ä–∏–ª–∞–Ω—Å–µ—Ä–∞ –∑ —Ñ—ñ–∫—Å–æ–≤–∞–Ω–æ—é –ø–æ–≥–æ–¥–∏–Ω–Ω–æ—é —Å—Ç–∞–≤–∫–æ—é.
  */
 public class Freelancer extends ContractEmployee {
     private double hourlyRate;
@@ -25,7 +25,7 @@ public class Freelancer extends ContractEmployee {
 
     public void setHourlyRate(double hourlyRate) {
         if (hourlyRate <= 0) {
-            throw new IllegalArgumentException("øﬁ”ﬁ‘ÿ››– ·‚–“⁄– ﬂﬁ“ÿ››– —„‚ÿ —ˆ€ÏËﬁÓ ◊– ›„€Ï");
+            throw new IllegalArgumentException("–ü–æ–≥–æ–¥–∏–Ω–Ω–∞ —Å—Ç–∞–≤–∫–∞ –ø–æ–≤–∏–Ω–Ω–∞ –±—É—Ç–∏ –±—ñ–ª—å—à–æ—é –∑–∞ –Ω—É–ª—å");
         }
         this.hourlyRate = hourlyRate;
     }
@@ -51,7 +51,7 @@ public class Freelancer extends ContractEmployee {
 
     @Override
     public String toString() {
-        return String.format("Freelancer { UUID: %s, ¶‹'Ô: '%s', øﬁ·–‘–: '%s', ∑–‡ﬂ€–‚–: %.2f ”‡›, ¡‚–÷: %d ‡., ≤ˆ‘‘ˆ€: %s, ∫ﬁ›‚‡–⁄‚: %d ‹ˆ·., ¡‚–“⁄–: %.2f ”‡›/”ﬁ‘ }",
+        return String.format("Freelancer { UUID: %s, –Ü–º'—è: '%s', –ü–æ—Å–∞–¥–∞: '%s', –ó–∞—Ä–ø–ª–∞—Ç–∞: %.2f –≥—Ä–Ω, –°—Ç–∞–∂: %d —Ä., –í—ñ–¥–¥—ñ–ª: %s, –ö–æ–Ω—Ç—Ä–∞–∫—Ç: %d –º—ñ—Å., –°—Ç–∞–≤–∫–∞: %.2f –≥—Ä–Ω/–≥–æ–¥ }",
                 getUuid(), getName(), getPosition(), getSalary(), getExperienceYears(), getDepartment().getTitle(), getContractDurationMonths(), hourlyRate);
     }
 }
