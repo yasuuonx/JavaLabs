@@ -3,10 +3,11 @@ package com.example;
 import org.junit.jupiter.api.Test;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Comparator;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
- * Тести для перевірки абстрактного класу, агрегації Company та інтерфейсу Comparable.
+ * Тести для перевірки агрегації Company та сортування через анонімні класи Comparator.
  */
 class EmployeeTest {
 
@@ -35,43 +36,68 @@ class EmployeeTest {
     }
 
     @Test
-    void shouldCorrectlySortEmployeesUsingComparable() {
+    void shouldCorrectlySortBySalaryDescendingUsingAnonymousComparator() {
         Company company = new Company("Test Corp");
-        Employee empZ = new FullTimeEmployee("Ярослав", "Розробник", 60000.0, 4, Department.IT, 5000.0);
-        Employee empA = new FullTimeEmployee("Андрій", "Тестувальник", 35000.0, 2, Department.IT, 2000.0);
-        Employee empB = new Manager("Богдан", "Керівник", 85000.0, 7, Department.FINANCE, 15000.0, 6);
+        company.addNewEmployee(new FullTimeEmployee("Андрій", "Інженер", 25000.0, 2, Department.IT, 1000.0), 1);
+        company.addNewEmployee(new FullTimeEmployee("Богдан", "Lead", 80000.0, 6, Department.IT, 5000.0), 1);
+        company.addNewEmployee(new FullTimeEmployee("Віктор", "Middle", 50000.0, 4, Department.IT, 3000.0), 1);
 
-        company.addNewEmployee(empZ, 1);
-        company.addNewEmployee(empA, 1);
-        company.addNewEmployee(empB, 1);
+        Comparator<Employee> salaryDescComparator = new Comparator<Employee>() {
+            @Override
+            public int compare(Employee o1, Employee o2) {
+                return Double.compare(o2.getSalary(), o1.getSalary());
+            }
+        };
 
-        ArrayList<Employee> sorted = company.getSortedEmployees();
-
-        assertEquals(3, sorted.size());
-        assertEquals("Андрій", sorted.get(0).getName());
-        assertEquals("Богдан", sorted.get(1).getName());
-        assertEquals("Ярослав", sorted.get(2).getName());
-
-        // Перевірка, що початковий список у компанії не змінив порядок
-        assertEquals("Ярослав", company.getEmployees().get(0).getName());
+        ArrayList<Employee> sorted = company.getSortedEmployees(salaryDescComparator);
+        assertEquals(80000.0, sorted.get(0).getSalary());
+        assertEquals(50000.0, sorted.get(1).getSalary());
+        assertEquals(25000.0, sorted.get(2).getSalary());
     }
 
     @Test
-    void shouldHandleSortingForEmptyAndSingleElementList() {
-        Company emptyCompany = new Company("Empty Corp");
-        ArrayList<Employee> emptySorted = emptyCompany.getSortedEmployees();
-        assertTrue(emptySorted.isEmpty());
+    void shouldCorrectlySortByExperienceAscendingUsingAnonymousComparator() {
+        Company company = new Company("Test Corp");
+        company.addNewEmployee(new FullTimeEmployee("Богдан", "Lead", 80000.0, 7, Department.IT, 5000.0), 1);
+        company.addNewEmployee(new FullTimeEmployee("Андрій", "Junior", 20000.0, 1, Department.IT, 1000.0), 1);
+        company.addNewEmployee(new FullTimeEmployee("Віктор", "Middle", 50000.0, 4, Department.IT, 3000.0), 1);
 
-        Company singleCompany = new Company("Single Corp");
-        singleCompany.addNewEmployee(new FullTimeEmployee("Василь", "Адмін", 40000.0, 3, Department.IT, 3000.0), 1);
-        ArrayList<Employee> singleSorted = singleCompany.getSortedEmployees();
-        assertEquals(1, singleSorted.size());
-        assertEquals("Василь", singleSorted.get(0).getName());
+        Comparator<Employee> expAscComparator = new Comparator<Employee>() {
+            @Override
+            public int compare(Employee o1, Employee o2) {
+                return Integer.compare(o1.getExperienceYears(), o2.getExperienceYears());
+            }
+        };
+
+        ArrayList<Employee> sorted = company.getSortedEmployees(expAscComparator);
+        assertEquals(1, sorted.get(0).getExperienceYears());
+        assertEquals(4, sorted.get(1).getExperienceYears());
+        assertEquals(7, sorted.get(2).getExperienceYears());
+    }
+
+    @Test
+    void shouldCorrectlySortByDepartmentUsingAnonymousComparator() {
+        Company company = new Company("Test Corp");
+        company.addNewEmployee(new FullTimeEmployee("Іван", "Маркетолог", 30000.0, 2, Department.MARKETING, 1000.0), 1);
+        company.addNewEmployee(new FullTimeEmployee("Олег", "Рекрутер", 25000.0, 1, Department.HR, 500.0), 1);
+        company.addNewEmployee(new FullTimeEmployee("Максим", "Фінансист", 40000.0, 5, Department.FINANCE, 2000.0), 1);
+
+        Comparator<Employee> deptComparator = new Comparator<Employee>() {
+            @Override
+            public int compare(Employee o1, Employee o2) {
+                return o1.getDepartment().getTitle().compareToIgnoreCase(o2.getDepartment().getTitle());
+            }
+        };
+
+        ArrayList<Employee> sorted = company.getSortedEmployees(deptComparator);
+        assertEquals(Department.HR, sorted.get(0).getDepartment());
+        assertEquals(Department.MARKETING, sorted.get(1).getDepartment());
+        assertEquals(Department.FINANCE, sorted.get(2).getDepartment());
     }
 
     @Test
     void shouldCorrectlySaveAndLoadCompanyFromFile() {
-        String testFileName = "test_company_input_13.txt";
+        String testFileName = "test_company_input_14.txt";
         Company originalCompany = new Company("AlphaSoft");
         originalCompany.addNewEmployee(new FullTimeEmployee("Тарас", "Аналітик", 35000.0, 2, Department.FINANCE, 4000.0), 3);
         originalCompany.addNewEmployee(new Manager("Олена", "Директор", 95000.0, 9, Department.IT, 20000.0, 12), 1);
