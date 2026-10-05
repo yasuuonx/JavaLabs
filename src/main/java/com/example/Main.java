@@ -5,7 +5,7 @@ import java.util.Comparator;
 import java.util.Scanner;
 
 /**
- * Драйвер програми з інтерактивним меню, підтримкою сортування через анонімні класи Comparator.
+ * Драйвер програми з інтерактивним меню, підтримкою сортування через лямбда-вирази Comparator.
  */
 public class Main {
     private static final String TEXT_FILE = "input.txt";
@@ -60,8 +60,8 @@ public class Main {
     }
 
     private static void printHeader() {
-        System.out.println("Практична робота №14");
-        System.out.println("Тема: Inner classes, interface Comparator");
+        System.out.println("Лабораторна робота №15");
+        System.out.println("Тема: Lambda expressions");
         System.out.println("Виконав: студент Демченко Станіслав");
     }
 
@@ -87,30 +87,15 @@ public class Main {
         switch (sortChoice) {
             case "1":
                 criteriaTitle = "за заробітною платою (від вищої до нижчої)";
-                comparator = new Comparator<Employee>() {
-                    @Override
-                    public int compare(Employee o1, Employee o2) {
-                        return Double.compare(o2.getSalary(), o1.getSalary());
-                    }
-                };
+                comparator = (o1, o2) -> Double.compare(o2.getSalary(), o1.getSalary());
                 break;
             case "2":
                 criteriaTitle = "за стажем роботи (від меншого до більшого)";
-                comparator = new Comparator<Employee>() {
-                    @Override
-                    public int compare(Employee o1, Employee o2) {
-                        return Integer.compare(o1.getExperienceYears(), o2.getExperienceYears());
-                    }
-                };
+                comparator = (o1, o2) -> Integer.compare(o1.getExperienceYears(), o2.getExperienceYears());
                 break;
             case "3":
                 criteriaTitle = "за назвою відділу компанії (за алфавітом)";
-                comparator = new Comparator<Employee>() {
-                    @Override
-                    public int compare(Employee o1, Employee o2) {
-                        return o1.getDepartment().getTitle().compareToIgnoreCase(o2.getDepartment().getTitle());
-                    }
-                };
+                comparator = (o1, o2) -> o1.getDepartment().getTitle().compareToIgnoreCase(o2.getDepartment().getTitle());
                 break;
             case "0":
                 System.out.println("Повернення до головного меню без сортування.");
