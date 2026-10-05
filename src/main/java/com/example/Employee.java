@@ -1,12 +1,14 @@
 package com.example;
 
 import java.util.Objects;
+import java.util.UUID;
 
 /**
  * Абстрактний базовий клас співробітника підприємства.
- * Реалізує інтерфейс Comparable для стабільного порівняння та сортування за ПІБ.
+ * Реалізує Comparable для сортування за ПІБ та Identifiable для отримання UUID.
  */
-public abstract class Employee implements Comparable<Employee> {
+public abstract class Employee implements Comparable<Employee>, Identifiable {
+    private final UUID uuid;
     private String name;
     private String position;
     private double salary;
@@ -14,15 +16,21 @@ public abstract class Employee implements Comparable<Employee> {
     private Department department;
 
     /**
-     * Конструктор з параметрами та валідацією.
-     *
-     * @param name            ім'я співробітника
-     * @param position        посада співробітника
-     * @param salary          заробітна плата
-     * @param experienceYears стаж роботи у роках
-     * @param department      відділ компанії
+     * Конструктор з автоматичною генерацією UUID.
      */
     public Employee(String name, String position, double salary, int experienceYears, Department department) {
+        this(UUID.randomUUID(), name, position, salary, experienceYears, department);
+    }
+
+    /**
+     * Конструктор із явним передаванням UUID.
+     */
+    public Employee(UUID uuid, String name, String position, double salary, int experienceYears, Department department) {
+        if (uuid == null) {
+            this.uuid = UUID.randomUUID();
+        } else {
+            this.uuid = uuid;
+        }
         setName(name);
         setPosition(position);
         setSalary(salary);
@@ -32,18 +40,22 @@ public abstract class Employee implements Comparable<Employee> {
 
     /**
      * Конструктор копіювання.
-     *
-     * @param other об'єкт Employee для копіювання
      */
     public Employee(Employee other) {
         if (other == null) {
             throw new IllegalArgumentException("Об'єкт для копіювання не може бути null");
         }
+        this.uuid = UUID.randomUUID();
         this.name = other.name;
         this.position = other.position;
         this.salary = other.salary;
         this.experienceYears = other.experienceYears;
         this.department = other.department;
+    }
+
+    @Override
+    public UUID getUuid() {
+        return uuid;
     }
 
     public String getName() {
@@ -101,12 +113,6 @@ public abstract class Employee implements Comparable<Employee> {
         this.department = department;
     }
 
-    /**
-     * Порівняння об'єктів для сортування за алфавітом (ПІБ), а при збігу — за посадою.
-     *
-     * @param other інший співробітник для порівняння
-     * @return результат лексикографічного порівняння
-     */
     @Override
     public int compareTo(Employee other) {
         if (other == null) {
@@ -120,12 +126,14 @@ public abstract class Employee implements Comparable<Employee> {
     }
 
     /**
-     * Формує текстовий рядок для збереження у файл.
-     *
-     * @return текстове представлення об'єкта
+     * Скорочений рядок для GUI та списків: назва + UUID.
      */
+    public String toShortString() {
+        return String.format("%s (%s) | UUID: %s", name, position, uuid);
+    }
+
     public String toFileString() {
-        return "EMPLOYEE;" + name + ";" + position + ";" + salary + ";" + experienceYears + ";" + department.name();
+        return "EMPLOYEE;" + uuid + ";" + name + ";" + position + ";" + salary + ";" + experienceYears + ";" + department.name();
     }
 
     @Override
@@ -133,21 +141,17 @@ public abstract class Employee implements Comparable<Employee> {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Employee employee = (Employee) o;
-        return Double.compare(employee.salary, salary) == 0 &&
-               experienceYears == employee.experienceYears &&
-               Objects.equals(name, employee.name) &&
-               Objects.equals(position, employee.position) &&
-               department == employee.department;
+        return Objects.equals(uuid, employee.uuid);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(name, position, salary, experienceYears, department);
+        return Objects.hash(uuid);
     }
 
     @Override
     public String toString() {
-        return String.format("Employee { Ім'я: '%s', Посада: '%s', Зарплата: %.2f грн, Стаж: %d р., Відділ: %s }",
-                name, position, salary, experienceYears, department.getTitle());
+        return String.format("Employee { UUID: %s, Ім'я: '%s', Посада: '%s', Зарплата: %.2f грн, Стаж: %d р., Відділ: %s }",
+                uuid, name, position, salary, experienceYears, department.getTitle());
     }
 }

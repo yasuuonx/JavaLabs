@@ -1,26 +1,21 @@
 package com.example;
 
 import java.util.Objects;
+import java.util.UUID;
 
 /**
- * Клас описує менеджера підрозділу, який є штатним співробітником і керує командою.
+ * Клас описує менеджера з бонусом та кількістю підлеглих.
  */
 public class Manager extends FullTimeEmployee {
     private int teamSize;
 
-    /**
-     * Конструктор менеджера.
-     *
-     * @param name            ім'я
-     * @param position        посада
-     * @param salary          ставка зарплати
-     * @param experienceYears стаж
-     * @param department      відділ
-     * @param annualBonus     річний бонус
-     * @param teamSize        кількість підлеглих у команді
-     */
     public Manager(String name, String position, double salary, int experienceYears, Department department, double annualBonus, int teamSize) {
         super(name, position, salary, experienceYears, department, annualBonus);
+        setTeamSize(teamSize);
+    }
+
+    public Manager(UUID uuid, String name, String position, double salary, int experienceYears, Department department, double annualBonus, int teamSize) {
+        super(uuid, name, position, salary, experienceYears, department, annualBonus);
         setTeamSize(teamSize);
     }
 
@@ -30,9 +25,14 @@ public class Manager extends FullTimeEmployee {
 
     public void setTeamSize(int teamSize) {
         if (teamSize < 0) {
-            throw new IllegalArgumentException("Розмір команди не може бути від'ємним");
+            throw new IllegalArgumentException("Кількість підлеглих не може бути від'ємною");
         }
         this.teamSize = teamSize;
+    }
+
+    @Override
+    public String toFileString() {
+        return "MANAGER;" + getUuid() + ";" + getName() + ";" + getPosition() + ";" + getSalary() + ";" + getExperienceYears() + ";" + getDepartment().name() + ";" + getAnnualBonus() + ";" + teamSize;
     }
 
     @Override
@@ -51,12 +51,7 @@ public class Manager extends FullTimeEmployee {
 
     @Override
     public String toString() {
-        return String.format("Manager { Ім'я: '%s', Посада: '%s', Зарплата: %.2f грн, Стаж: %d р., Відділ: %s, Бонус: %.2f грн, Команда: %d ос. }",
-                getName(), getPosition(), getSalary(), getExperienceYears(), getDepartment().getTitle(), getAnnualBonus(), teamSize);
-    }
-	
-	@Override
-    public String toFileString() {
-        return "MANAGER;" + getName() + ";" + getPosition() + ";" + getSalary() + ";" + getExperienceYears() + ";" + getDepartment().name() + ";" + getAnnualBonus() + ";" + teamSize;
+        return String.format("Manager { UUID: %s, Ім'я: '%s', Посада: '%s', Зарплата: %.2f грн, Стаж: %d р., Відділ: %s, Бонус: %.2f грн, Підлеглих: %d }",
+                getUuid(), getName(), getPosition(), getSalary(), getExperienceYears(), getDepartment().getTitle(), getAnnualBonus(), teamSize);
     }
 }
