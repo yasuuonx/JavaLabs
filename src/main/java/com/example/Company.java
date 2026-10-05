@@ -2,6 +2,7 @@ package com.example;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 
 /**
  * Клас-контейнер, який агрегує колекцію співробітників та підтримує сортування.
@@ -77,13 +78,27 @@ public class Company {
     }
 
     /**
-     * Повертає відсортовану копію списку співробітників за Comparable без мутації оригінального списку.
+     * Повертає відсортовану копію списку співробітників за замовчуванням (Comparable).
      *
      * @return новий відсортований список співробітників
      */
     public ArrayList<Employee> getSortedEmployees() {
         ArrayList<Employee> sortedList = new ArrayList<Employee>(this.employees);
         Collections.sort(sortedList);
+        return sortedList;
+    }
+
+    /**
+     * Повертає відсортовану копію списку співробітників за переданим Comparator.
+     *
+     * @param comparator критерій порівняння
+     * @return новий відсортований список співробітників
+     */
+    public ArrayList<Employee> getSortedEmployees(Comparator<Employee> comparator) {
+        ArrayList<Employee> sortedList = new ArrayList<Employee>(this.employees);
+        if (comparator != null) {
+            Collections.sort(sortedList, comparator);
+        }
         return sortedList;
     }
 
