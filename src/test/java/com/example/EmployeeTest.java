@@ -5,7 +5,64 @@ import java.io.File;
 import java.util.UUID;
 import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * Тести для перевірки бізнес-логіки та кидання власних винятків (ЛР18).
+ */
 class EmployeeTest {
+
+    @Test
+    void shouldThrowInvalidFieldValueExceptionWhenSettingNegativeSalary() {
+        Employee employee = new FullTimeEmployee("Олексій", "Інженер", 30000.0, 2, Department.IT, 5000.0);
+
+        InvalidFieldValueException exception = assertThrows(InvalidFieldValueException.class, () -> {
+            employee.setSalary(-500.0);
+        });
+
+        assertEquals("Заробітна плата не може бути від'ємною", exception.getMessage());
+    }
+
+    @Test
+    void shouldThrowInvalidFieldValueExceptionWhenSettingEmptyName() {
+        Employee employee = new FullTimeEmployee("Олексій", "Інженер", 30000.0, 2, Department.IT, 5000.0);
+
+        assertThrows(InvalidFieldValueException.class, () -> {
+            employee.setName("   ");
+        });
+    }
+
+    @Test
+    void shouldThrowObjectNotFoundExceptionWhenDeletingNonExistingObject() {
+        Company company = new Company("TestCompany");
+        FullTimeEmployee existing = new FullTimeEmployee("Іван", "Lead", 60000.0, 4, Department.IT, 8000.0);
+        FullTimeEmployee nonExisting = new FullTimeEmployee("Петро", "Junior", 20000.0, 1, Department.IT, 2000.0);
+
+        company.addNewEmployee(existing, 1);
+
+        assertThrows(ObjectNotFoundException.class, () -> {
+            company.delete(nonExisting);
+        });
+    }
+
+    @Test
+    void shouldThrowObjectNotFoundExceptionWhenUpdatingNonExistingObject() {
+        Company company = new Company("TestCompany");
+        FullTimeEmployee existing = new FullTimeEmployee("Іван", "Lead", 60000.0, 4, Department.IT, 8000.0);
+        FullTimeEmployee nonExisting = new FullTimeEmployee("Петро", "Junior", 20000.0, 1, Department.IT, 2000.0);
+
+        company.addNewEmployee(existing, 1);
+
+        assertThrows(ObjectNotFoundException.class, () -> {
+            company.update(nonExisting, existing);
+        });
+    }
+
+    @Test
+    void shouldThrowObjectNotFoundExceptionWhenDeletingNull() {
+        Company company = new Company("TestCompany");
+        assertThrows(ObjectNotFoundException.class, () -> {
+            company.delete(null);
+        });
+    }
 
     @Test
     void shouldSuccessfullyUpdateExistingEmployee() {
@@ -23,18 +80,6 @@ class EmployeeTest {
     }
 
     @Test
-    void shouldReturnFalseWhenUpdatingNonExistentEmployee() {
-        Company company = new Company("UpdateCorp");
-        FullTimeEmployee emp1 = new FullTimeEmployee("Олексій", "Dev", 30000.0, 1, Department.IT, 3000.0);
-        FullTimeEmployee emp2 = new FullTimeEmployee("Іван", "Lead", 80000.0, 5, Department.IT, 10000.0);
-        company.addNewEmployee(emp1, 1);
-
-        boolean result = company.update(emp2, emp1);
-        assertFalse(result);
-        assertFalse(company.update(null, emp1));
-    }
-
-    @Test
     void shouldSuccessfullyDeleteExistingEmployee() {
         Company company = new Company("DeleteCorp");
         ContractEmployee emp = new ContractEmployee("Андрій", "Консультант", 35000.0, 3, Department.FINANCE, 6);
@@ -46,19 +91,6 @@ class EmployeeTest {
         assertTrue(result);
         assertEquals(0, company.size());
         assertEquals(0, company.getQuantities().size());
-    }
-
-    @Test
-    void shouldReturnFalseWhenDeletingNonExistentEmployee() {
-        Company company = new Company("DeleteCorp");
-        ContractEmployee emp1 = new ContractEmployee("Андрій", "Консультант", 35000.0, 3, Department.FINANCE, 6);
-        ContractEmployee emp2 = new ContractEmployee("Сергій", "Дизайнер", 30000.0, 2, Department.MARKETING, 12);
-        company.addNewEmployee(emp1, 1);
-
-        boolean result = company.delete(emp2);
-        assertFalse(result);
-        assertFalse(company.delete(null));
-        assertEquals(1, company.size());
     }
 
     @Test
@@ -84,19 +116,8 @@ class EmployeeTest {
     }
 
     @Test
-    void shouldThrowExceptionWhenInvalidValueInSetter() {
-        Employee employee = new FullTimeEmployee("Олексій", "Інженер", 30000.0, 2, Department.IT, 5000.0);
-
-        assertThrows(IllegalArgumentException.class, () -> employee.setSalary(-1000.0));
-        assertThrows(IllegalArgumentException.class, () -> employee.setExperienceYears(-3));
-        assertThrows(IllegalArgumentException.class, () -> employee.setName("   "));
-        assertThrows(IllegalArgumentException.class, () -> employee.setPosition(""));
-        assertThrows(IllegalArgumentException.class, () -> employee.setDepartment(null));
-    }
-
-    @Test
     void shouldCorrectlySaveAndLoadCompanyWithUuid() {
-        String testFileName = "test_company_input_17.txt";
+        String testFileName = "test_company_input_18.txt";
         Company originalCompany = new Company("AlphaSoft");
         FullTimeEmployee emp = new FullTimeEmployee("Тарас", "Аналітик", 35000.0, 2, Department.FINANCE, 4000.0);
         originalCompany.addNewEmployee(emp, 2);

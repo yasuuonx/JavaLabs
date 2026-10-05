@@ -4,8 +4,7 @@ import java.util.Objects;
 import java.util.UUID;
 
 /**
- * Абстрактний базовий клас співробітника підприємства.
- * Реалізує Comparable для сортування за ПІБ та Identifiable для отримання UUID.
+ * Базовий абстрактний клас співробітника.
  */
 public abstract class Employee implements Comparable<Employee>, Identifiable {
     private final UUID uuid;
@@ -15,42 +14,20 @@ public abstract class Employee implements Comparable<Employee>, Identifiable {
     private int experienceYears;
     private Department department;
 
-    /**
-     * Конструктор з автоматичною генерацією UUID.
-     */
     public Employee(String name, String position, double salary, int experienceYears, Department department) {
         this(UUID.randomUUID(), name, position, salary, experienceYears, department);
     }
 
-    /**
-     * Конструктор із явним передаванням UUID.
-     */
     public Employee(UUID uuid, String name, String position, double salary, int experienceYears, Department department) {
         if (uuid == null) {
-            this.uuid = UUID.randomUUID();
-        } else {
-            this.uuid = uuid;
+            throw new InvalidFieldValueException("UUID не може бути null");
         }
+        this.uuid = uuid;
         setName(name);
         setPosition(position);
         setSalary(salary);
         setExperienceYears(experienceYears);
         setDepartment(department);
-    }
-
-    /**
-     * Конструктор копіювання.
-     */
-    public Employee(Employee other) {
-        if (other == null) {
-            throw new IllegalArgumentException("Об'єкт для копіювання не може бути null");
-        }
-        this.uuid = UUID.randomUUID();
-        this.name = other.name;
-        this.position = other.position;
-        this.salary = other.salary;
-        this.experienceYears = other.experienceYears;
-        this.department = other.department;
     }
 
     @Override
@@ -64,7 +41,7 @@ public abstract class Employee implements Comparable<Employee>, Identifiable {
 
     public void setName(String name) {
         if (name == null || name.trim().isEmpty()) {
-            throw new IllegalArgumentException("Ім'я не може бути порожнім");
+            throw new InvalidFieldValueException("Ім'я співробітника не може бути порожнім");
         }
         this.name = name.trim();
     }
@@ -75,7 +52,7 @@ public abstract class Employee implements Comparable<Employee>, Identifiable {
 
     public void setPosition(String position) {
         if (position == null || position.trim().isEmpty()) {
-            throw new IllegalArgumentException("Посада не може бути порожньою");
+            throw new InvalidFieldValueException("Посада не може бути порожньою");
         }
         this.position = position.trim();
     }
@@ -85,8 +62,8 @@ public abstract class Employee implements Comparable<Employee>, Identifiable {
     }
 
     public void setSalary(double salary) {
-        if (salary <= 0) {
-            throw new IllegalArgumentException("Заробітна плата повинна бути більшою за нуль");
+        if (salary < 0) {
+            throw new InvalidFieldValueException("Заробітна плата не може бути від'ємною");
         }
         this.salary = salary;
     }
@@ -97,7 +74,7 @@ public abstract class Employee implements Comparable<Employee>, Identifiable {
 
     public void setExperienceYears(int experienceYears) {
         if (experienceYears < 0) {
-            throw new IllegalArgumentException("Стаж не може бути від'ємним");
+            throw new InvalidFieldValueException("Стаж роботи не може бути від'ємним");
         }
         this.experienceYears = experienceYears;
     }
@@ -108,9 +85,15 @@ public abstract class Employee implements Comparable<Employee>, Identifiable {
 
     public void setDepartment(Department department) {
         if (department == null) {
-            throw new IllegalArgumentException("Відділ не може бути null");
+            throw new InvalidFieldValueException("Відділ не може бути null");
         }
         this.department = department;
+    }
+
+    public abstract String toFileString();
+
+    public String toShortString() {
+        return String.format("[%s] %s (%s, %.2f грн)", uuid, name, position, salary);
     }
 
     @Override
@@ -118,22 +101,7 @@ public abstract class Employee implements Comparable<Employee>, Identifiable {
         if (other == null) {
             return 1;
         }
-        int nameComparison = this.name.compareToIgnoreCase(other.name);
-        if (nameComparison != 0) {
-            return nameComparison;
-        }
-        return this.position.compareToIgnoreCase(other.position);
-    }
-
-    /**
-     * Скорочений рядок для GUI та списків: назва + UUID.
-     */
-    public String toShortString() {
-        return String.format("%s (%s) | UUID: %s", name, position, uuid);
-    }
-
-    public String toFileString() {
-        return "EMPLOYEE;" + uuid + ";" + name + ";" + position + ";" + salary + ";" + experienceYears + ";" + department.name();
+        return this.name.compareToIgnoreCase(other.name);
     }
 
     @Override
@@ -147,11 +115,5 @@ public abstract class Employee implements Comparable<Employee>, Identifiable {
     @Override
     public int hashCode() {
         return Objects.hash(uuid);
-    }
-
-    @Override
-    public String toString() {
-        return String.format("Employee { UUID: %s, Ім'я: '%s', Посада: '%s', Зарплата: %.2f грн, Стаж: %d р., Відділ: %s }",
-                uuid, name, position, salary, experienceYears, department.getTitle());
     }
 }

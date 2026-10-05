@@ -6,8 +6,7 @@ import java.util.Comparator;
 import java.util.UUID;
 
 /**
- * Клас-контейнер, який агрегує колекцію співробітників та реалізує
- * операції додавання, оновлення (update), видалення (delete), пошуку та сортування.
+ * Клас-контейнер, що агрегує колекцію співробітників та реалізує бізнес-операції.
  */
 public class Company {
     private String name;
@@ -26,17 +25,17 @@ public class Company {
 
     public void setName(String name) {
         if (name == null || name.trim().isEmpty()) {
-            throw new IllegalArgumentException("Назва компанії не може бути порожньою");
+            throw new InvalidFieldValueException("Назва компанії не може бути порожньою");
         }
         this.name = name.trim();
     }
 
     public void addNewEmployee(Employee emp, int quantity) {
         if (emp == null) {
-            throw new IllegalArgumentException("Співробітник не може бути null");
+            throw new InvalidFieldValueException("Співробітник не може бути null");
         }
         if (quantity <= 0) {
-            throw new IllegalArgumentException("Кількість повинна бути більшою за нуль");
+            throw new InvalidFieldValueException("Кількість повинна бути більшою за нуль");
         }
 
         for (int i = 0; i < employees.size(); i++) {
@@ -53,14 +52,15 @@ public class Company {
     }
 
     /**
-     * Модифікація об'єкта в колекції (Завдання 1, ЛР 17).
-     * @param existingObject об'єкт, який потрібно знайти та оновити
-     * @param newObject новий об'єкт з оновленими значеннями
-     * @return true, якщо об'єкт знайдено та оновлено; false - якщо не знайдено
+     * Модифікація об'єкта в колекції.
+     * Якщо об'єкт не знайдено, викидає ObjectNotFoundException.
      */
     public boolean update(Employee existingObject, Employee newObject) {
-        if (existingObject == null || newObject == null) {
-            return false;
+        if (existingObject == null) {
+            throw new ObjectNotFoundException("Неможливо оновити: передано порожній об'єкт (null)");
+        }
+        if (newObject == null) {
+            throw new InvalidFieldValueException("Новий об'єкт для оновлення не може бути null");
         }
 
         for (int i = 0; i < employees.size(); i++) {
@@ -70,17 +70,17 @@ public class Company {
                 return true;
             }
         }
-        return false;
+
+        throw new ObjectNotFoundException("Об'єкт для оновлення з UUID " + existingObject.getUuid() + " не знайдено в колекції");
     }
 
     /**
-     * Видалення об'єкта з колекції (Завдання 2, ЛР 17).
-     * @param existingObject об'єкт, який потрібно видалити
-     * @return true, якщо видалено успішно; false - якщо об'єкт не знайдено
+     * Видалення об'єкта з колекції.
+     * Якщо об'єкт не знайдено, викидає ObjectNotFoundException.
      */
     public boolean delete(Employee existingObject) {
         if (existingObject == null) {
-            return false;
+            throw new ObjectNotFoundException("Неможливо видалити: передано порожній об'єкт (null)");
         }
 
         for (int i = 0; i < employees.size(); i++) {
@@ -91,7 +91,8 @@ public class Company {
                 return true;
             }
         }
-        return false;
+
+        throw new ObjectNotFoundException("Об'єкт для видалення з UUID " + existingObject.getUuid() + " не знайдено в колекції");
     }
 
     public ArrayList<Employee> getEmployees() {

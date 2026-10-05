@@ -6,7 +6,7 @@ import java.util.Scanner;
 import java.util.UUID;
 
 /**
- * Консольний драйвер з меню, що підтримує модифікацію (update) та видалення (delete).
+ * Консольний драйвер із коректною обробкою власних винятків.
  */
 public class Main {
     private static final String TEXT_FILE = "input.txt";
@@ -34,34 +34,42 @@ public class Main {
 
             String choice = scanner.nextLine().trim();
 
-            switch (choice) {
-                case "1":
-                    handleSearchMenu(scanner, company);
-                    break;
-                case "2":
-                    handleCreateObjectMenu(scanner, company);
-                    break;
-                case "3":
-                    handleUpdateEmployee(scanner, company);
-                    break;
-                case "4":
-                    handleDeleteEmployee(scanner, company);
-                    break;
-                case "5":
-                    displayAllEmployees(company);
-                    break;
-                case "6":
-                    handleSortMenu(scanner, company);
-                    break;
-                case "7":
-                    FileManager.saveCompanyToFile(TEXT_FILE, company);
-                    System.out.println("Дані компанії збережено у файл " + TEXT_FILE);
-                    isRunning = false;
-                    System.out.println("Роботу програми завершено.");
-                    break;
-                default:
-                    System.out.println("Помилка: невідома опція меню. Оберіть пункт від 1 до 7.");
-                    break;
+            try {
+                switch (choice) {
+                    case "1":
+                        handleSearchMenu(scanner, company);
+                        break;
+                    case "2":
+                        handleCreateObjectMenu(scanner, company);
+                        break;
+                    case "3":
+                        handleUpdateEmployee(scanner, company);
+                        break;
+                    case "4":
+                        handleDeleteEmployee(scanner, company);
+                        break;
+                    case "5":
+                        displayAllEmployees(company);
+                        break;
+                    case "6":
+                        handleSortMenu(scanner, company);
+                        break;
+                    case "7":
+                        FileManager.saveCompanyToFile(TEXT_FILE, company);
+                        System.out.println("Дані компанії збережено у файл " + TEXT_FILE);
+                        isRunning = false;
+                        System.out.println("Роботу програми завершено.");
+                        break;
+                    default:
+                        System.out.println("Помилка: невідома опція меню. Оберіть пункт від 1 до 7.");
+                        break;
+                }
+            } catch (InvalidFieldValueException e) {
+                System.out.println("[Помилка валідації даних]: " + e.getMessage());
+            } catch (ObjectNotFoundException e) {
+                System.out.println("[Помилка пошуку об'єкта]: " + e.getMessage());
+            } catch (Exception e) {
+                System.out.println("[Непередбачена помилка]: " + e.getMessage());
             }
         }
 
@@ -69,8 +77,8 @@ public class Main {
     }
 
     private static void printHeader() {
-        System.out.println("Лабораторна робота №17");
-        System.out.println("Тема: Модифікація та видалення елементів у колекціях");
+        System.out.println("Лабораторна робота №18");
+        System.out.println("Тема: Custom exceptions + автотести для перевірки винятків");
         System.out.println("Виконав: студент Демченко Станіслав");
     }
 
@@ -87,8 +95,7 @@ public class Main {
         try {
             index = Integer.parseInt(scanner.nextLine().trim()) - 1;
         } catch (NumberFormatException e) {
-            System.out.println("Помилка: введіть коректне число.");
-            return;
+            throw new InvalidFieldValueException("Очікується ціле число для вибору позиції");
         }
 
         if (index == -1) {
@@ -97,8 +104,7 @@ public class Main {
         }
 
         if (index < 0 || index >= company.size()) {
-            System.out.println("Помилка: співробітника з таким номером не існує.");
-            return;
+            throw new ObjectNotFoundException("Співробітника за вказаним номером " + (index + 1) + " не існує");
         }
 
         Employee target = company.getEmployees().get(index);
@@ -119,50 +125,47 @@ public class Main {
             return;
         }
 
-        try {
-            Employee updated = copyEmployee(target);
+        Employee updated = copyEmployee(target);
 
-            switch (attrChoice) {
-                case "1":
-                    System.out.print("Введіть нове ім'я: ");
-                    updated.setName(scanner.nextLine());
-                    break;
-                case "2":
-                    System.out.print("Введіть нову посаду: ");
-                    updated.setPosition(scanner.nextLine());
-                    break;
-                case "3":
-                    System.out.print("Введіть нову заробітну плату: ");
+        switch (attrChoice) {
+            case "1":
+                System.out.print("Введіть нове ім'я: ");
+                updated.setName(scanner.nextLine());
+                break;
+            case "2":
+                System.out.print("Введіть нову посаду: ");
+                updated.setPosition(scanner.nextLine());
+                break;
+            case "3":
+                System.out.print("Введіть нову заробітну плату: ");
+                try {
                     updated.setSalary(Double.parseDouble(scanner.nextLine().trim()));
-                    break;
-                case "4":
-                    System.out.print("Введіть новий стаж роботи (роки): ");
+                } catch (NumberFormatException e) {
+                    throw new InvalidFieldValueException("Заробітна плата повинна бути числом");
+                }
+                break;
+            case "4":
+                System.out.print("Введіть новий стаж роботи (роки): ");
+                try {
                     updated.setExperienceYears(Integer.parseInt(scanner.nextLine().trim()));
-                    break;
-                case "5":
-                    Department newDept = chooseDepartment(scanner);
-                    updated.setDepartment(newDept);
-                    break;
-                case "6":
-                    updateSpecificAttribute(scanner, updated);
-                    break;
-                default:
-                    System.out.println("Помилка: невідомий атрибут.");
-                    return;
-            }
-
-            boolean isUpdated = company.update(target, updated);
-            if (isUpdated) {
-                System.out.println("Об'єкт успішно модифіковано:");
-                System.out.println(updated);
-            } else {
-                System.out.println("Помилка: не вдалося оновити об'єкт у колекції.");
-            }
-        } catch (NumberFormatException e) {
-            System.out.println("Помилка введення: очікується числове значення.");
-        } catch (IllegalArgumentException e) {
-            System.out.println("Помилка валідації: " + e.getMessage());
+                } catch (NumberFormatException e) {
+                    throw new InvalidFieldValueException("Стаж повинен бути цілим числом");
+                }
+                break;
+            case "5":
+                Department newDept = chooseDepartment(scanner);
+                updated.setDepartment(newDept);
+                break;
+            case "6":
+                updateSpecificAttribute(scanner, updated);
+                break;
+            default:
+                throw new InvalidFieldValueException("Обрано неіснуючий атрибут");
         }
+
+        company.update(target, updated);
+        System.out.println("Об'єкт успішно модифіковано:");
+        System.out.println(updated);
     }
 
     private static Employee copyEmployee(Employee source) {
@@ -179,44 +182,48 @@ public class Main {
             ContractEmployee c = (ContractEmployee) source;
             return new ContractEmployee(c.getUuid(), c.getName(), c.getPosition(), c.getSalary(), c.getExperienceYears(), c.getDepartment(), c.getContractDurationMonths());
         }
-        throw new IllegalStateException("Невідомий підтип співробітника");
+        throw new InvalidFieldValueException("Невідомий тип співробітника");
     }
 
     private static void updateSpecificAttribute(Scanner scanner, Employee emp) {
-        if (emp instanceof Manager) {
-            Manager m = (Manager) emp;
-            System.out.println("1. Змінити річний бонус");
-            System.out.println("2. Змінити кількість підлеглих");
-            System.out.print("Вибір: ");
-            String subChoice = scanner.nextLine().trim();
-            if ("1".equals(subChoice)) {
-                System.out.print("Новий бонус: ");
-                m.setAnnualBonus(Double.parseDouble(scanner.nextLine().trim()));
-            } else if ("2".equals(subChoice)) {
-                System.out.print("Нова кількість підлеглих: ");
-                m.setTeamSize(Integer.parseInt(scanner.nextLine().trim()));
+        try {
+            if (emp instanceof Manager) {
+                Manager m = (Manager) emp;
+                System.out.println("1. Змінити річний бонус");
+                System.out.println("2. Змінити кількість підлеглих");
+                System.out.print("Вибір: ");
+                String sub = scanner.nextLine().trim();
+                if ("1".equals(sub)) {
+                    System.out.print("Новий бонус: ");
+                    m.setAnnualBonus(Double.parseDouble(scanner.nextLine().trim()));
+                } else if ("2".equals(sub)) {
+                    System.out.print("Нова кількість підлеглих: ");
+                    m.setTeamSize(Integer.parseInt(scanner.nextLine().trim()));
+                }
+            } else if (emp instanceof Freelancer) {
+                Freelancer f = (Freelancer) emp;
+                System.out.println("1. Змінити погодинну ставку");
+                System.out.println("2. Змінити тривалість контракту (міс)");
+                System.out.print("Вибір: ");
+                String sub = scanner.nextLine().trim();
+                if ("1".equals(sub)) {
+                    System.out.print("Нова погодинна ставка: ");
+                    f.setHourlyRate(Double.parseDouble(scanner.nextLine().trim()));
+                } else if ("2".equals(sub)) {
+                    System.out.print("Нова тривалість контракту: ");
+                    f.setContractDurationMonths(Integer.parseInt(scanner.nextLine().trim()));
+                }
+            } else if (emp instanceof FullTimeEmployee) {
+                FullTimeEmployee ft = (FullTimeEmployee) emp;
+                System.out.print("Новий річний бонус: ");
+                ft.setAnnualBonus(Double.parseDouble(scanner.nextLine().trim()));
+            } else if (emp instanceof ContractEmployee) {
+                ContractEmployee c = (ContractEmployee) emp;
+                System.out.print("Нова тривалість контракту (міс): ");
+                c.setContractDurationMonths(Integer.parseInt(scanner.nextLine().trim()));
             }
-        } else if (emp instanceof Freelancer) {
-            Freelancer f = (Freelancer) emp;
-            System.out.println("1. Змінити погодинну ставку");
-            System.out.println("2. Змінити тривалість контракту (міс)");
-            System.out.print("Вибір: ");
-            String subChoice = scanner.nextLine().trim();
-            if ("1".equals(subChoice)) {
-                System.out.print("Нова погодинна ставка: ");
-                f.setHourlyRate(Double.parseDouble(scanner.nextLine().trim()));
-            } else if ("2".equals(subChoice)) {
-                System.out.print("Нова тривалість контракту: ");
-                f.setContractDurationMonths(Integer.parseInt(scanner.nextLine().trim()));
-            }
-        } else if (emp instanceof FullTimeEmployee) {
-            FullTimeEmployee ft = (FullTimeEmployee) emp;
-            System.out.print("Новий річний бонус: ");
-            ft.setAnnualBonus(Double.parseDouble(scanner.nextLine().trim()));
-        } else if (emp instanceof ContractEmployee) {
-            ContractEmployee c = (ContractEmployee) emp;
-            System.out.print("Нова тривалість контракту (міс): ");
-            c.setContractDurationMonths(Integer.parseInt(scanner.nextLine().trim()));
+        } catch (NumberFormatException e) {
+            throw new InvalidFieldValueException("Некоректний формат числового значення специфічного атрибута");
         }
     }
 
@@ -233,8 +240,7 @@ public class Main {
         try {
             index = Integer.parseInt(scanner.nextLine().trim()) - 1;
         } catch (NumberFormatException e) {
-            System.out.println("Помилка: введіть коректне число.");
-            return;
+            throw new InvalidFieldValueException("Очікується ціле число для вибору");
         }
 
         if (index == -1) {
@@ -243,8 +249,7 @@ public class Main {
         }
 
         if (index < 0 || index >= company.size()) {
-            System.out.println("Помилка: співробітника з таким номером не існує.");
-            return;
+            throw new ObjectNotFoundException("Співробітника за номером " + (index + 1) + " не існує");
         }
 
         Employee target = company.getEmployees().get(index);
@@ -253,12 +258,8 @@ public class Main {
         String confirm = scanner.nextLine().trim();
 
         if ("1".equals(confirm)) {
-            boolean isDeleted = company.delete(target);
-            if (isDeleted) {
-                System.out.println("Співробітника успішно видалено з компанії.");
-            } else {
-                System.out.println("Помилка: об'єкт не знайдено для видалення.");
-            }
+            company.delete(target);
+            System.out.println("Співробітника успішно видалено з компанії.");
         } else {
             System.out.println("Видалення скасовано користувачем.");
         }
@@ -279,7 +280,6 @@ public class Main {
         System.out.print("Ваш вибір: ");
 
         String sortChoice = scanner.nextLine().trim();
-
         Comparator<Employee> comparator = null;
         String criteriaTitle = "";
 
@@ -299,8 +299,7 @@ public class Main {
             case "0":
                 return;
             default:
-                System.out.println("Помилка: невідомий вибір.");
-                return;
+                throw new InvalidFieldValueException("Обрано невірний пункт сортування");
         }
 
         ArrayList<Employee> sortedList = company.getSortedEmployees(comparator);
@@ -340,12 +339,11 @@ public class Main {
                     System.out.print("Максимальна зарплата: ");
                     double max = Double.parseDouble(scanner.nextLine().trim());
                     if (min > max) {
-                        System.out.println("Помилка: min > max");
-                        return;
+                        throw new InvalidFieldValueException("Мінімальна зарплата не може бути більшою за максимальну");
                     }
                     displaySearchResults(company.searchBySalaryRange(min, max));
                 } catch (NumberFormatException e) {
-                    System.out.println("Помилка: очікується число.");
+                    throw new InvalidFieldValueException("Введіть коректні числа для діапазону зарплати");
                 }
                 break;
             case "3":
@@ -360,17 +358,16 @@ public class Main {
                     if (found != null) {
                         System.out.println("Знайдено: " + found);
                     } else {
-                        System.out.println("Не знайдено.");
+                        throw new ObjectNotFoundException("Співробітника з таким UUID не знайдено");
                     }
                 } catch (IllegalArgumentException e) {
-                    System.out.println("Некоректний формат UUID.");
+                    throw new InvalidFieldValueException("Некоректний формат UUID");
                 }
                 break;
             case "0":
                 break;
             default:
-                System.out.println("Невідомий пункт.");
-                break;
+                throw new InvalidFieldValueException("Обрано неіснуючий критерій пошуку");
         }
     }
 
@@ -436,16 +433,13 @@ public class Main {
                     emp = new Freelancer(name, position, salary, exp, dept, rate, dur);
                     break;
                 default:
-                    System.out.println("Невідомий тип.");
-                    return;
+                    throw new InvalidFieldValueException("Обрано неіснуючий тип співробітника");
             }
 
             company.addNewEmployee(emp, qty);
             System.out.println("Додано об'єкт: " + emp.toShortString());
         } catch (NumberFormatException e) {
-            System.out.println("Помилка числового формату.");
-        } catch (IllegalArgumentException e) {
-            System.out.println("Помилка: " + e.getMessage());
+            throw new InvalidFieldValueException("Очікується числове значення при створенні об'єкта");
         }
     }
 
@@ -457,7 +451,7 @@ public class Main {
             case "2": return Department.HR;
             case "3": return Department.FINANCE;
             case "4": return Department.MARKETING;
-            default: throw new IllegalArgumentException("Невірний номер відділу");
+            default: throw new InvalidFieldValueException("Некоректний номер відділу");
         }
     }
 
