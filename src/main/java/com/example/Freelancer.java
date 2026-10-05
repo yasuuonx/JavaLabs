@@ -56,7 +56,12 @@ public class Freelancer extends ContractEmployee {
 
     @Override
     public String toString() {
+<<<<<<< HEAD
         return String.format("Freelancer { Ім'я: '%s', Посада: '%s', Зарплата: %.2f грн, Стаж: %d р., Відділ: %s, Контракт: %d міс., Ставка: %.2f грн/год }",
                 getName(), getPosition(), getSalary(), getExperienceYears(), getDepartment().getTitle(), getContractDurationMonths(), hourlyRate);
+=======
+        return String.format("Freelancer { UUID: %s, Ім'я: '%s', Посада: '%s', Зарплата: %.2f грн, Стаж: %d р., Відділ: %s, Контракт: %d міс., Ставка: %.2f грн/год }",
+                getUuid(), getName(), getPosition(), getSalary(), getExperienceYears(), getDepartment().getTitle(), getContractDurationMonths(), hourlyRate);
+>>>>>>> 127b5e2 (Implement Identifiable interface, UUID field and search by UUID)
     }
 }
