@@ -6,18 +6,13 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.UUID;
 
 /**
- * Клас для читання та збереження стану об'єкта Company у файл input.txt.
+ * Клас для збереження та завантаження стану Company у текстовий файл.
  */
 public class FileManager {
 
-    /**
-     * Завантажує дані компанії та її співробітників із файлу input.txt.
-     *
-     * @param fileName назва файлу
-     * @return об'єкт Company
-     */
     public static Company loadCompanyFromFile(String fileName) {
         File file = new File(fileName);
         if (!file.exists()) {
@@ -46,41 +41,51 @@ public class FileManager {
 
                 try {
                     String type = parts[0];
-                    String name = parts[1];
-                    String position = parts[2];
-                    double salary = Double.parseDouble(parts[3]);
-                    int experience = Integer.parseInt(parts[4]);
-                    Department department = Department.valueOf(parts[5]);
+                    int index = 1;
+                    UUID uuid = null;
+
+                    try {
+                        uuid = UUID.fromString(parts[index]);
+                        index++;
+                    } catch (IllegalArgumentException e) {
+                        uuid = UUID.randomUUID();
+                    }
+
+                    String name = parts[index++];
+                    String position = parts[index++];
+                    double salary = Double.parseDouble(parts[index++]);
+                    int experience = Integer.parseInt(parts[index++]);
+                    Department department = Department.valueOf(parts[index++]);
 
                     Employee employee = null;
                     int quantity = 1;
 
                     switch (type) {
                         case "EMPLOYEE":
-                            quantity = Integer.parseInt(parts[6]);
-                            employee = new FullTimeEmployee(name, position, salary, experience, department, 0.0);
+                            quantity = Integer.parseInt(parts[index]);
+                            employee = new FullTimeEmployee(uuid, name, position, salary, experience, department, 0.0);
                             break;
                         case "FULL_TIME":
-                            double bonus = Double.parseDouble(parts[6]);
-                            quantity = Integer.parseInt(parts[7]);
-                            employee = new FullTimeEmployee(name, position, salary, experience, department, bonus);
+                            double bonus = Double.parseDouble(parts[index++]);
+                            quantity = Integer.parseInt(parts[index]);
+                            employee = new FullTimeEmployee(uuid, name, position, salary, experience, department, bonus);
                             break;
                         case "CONTRACT":
-                            int duration = Integer.parseInt(parts[6]);
-                            quantity = Integer.parseInt(parts[7]);
-                            employee = new ContractEmployee(name, position, salary, experience, department, duration);
+                            int duration = Integer.parseInt(parts[index++]);
+                            quantity = Integer.parseInt(parts[index]);
+                            employee = new ContractEmployee(uuid, name, position, salary, experience, department, duration);
                             break;
                         case "MANAGER":
-                            double mgrBonus = Double.parseDouble(parts[6]);
-                            int teamSize = Integer.parseInt(parts[7]);
-                            quantity = Integer.parseInt(parts[8]);
-                            employee = new Manager(name, position, salary, experience, department, mgrBonus, teamSize);
+                            double mgrBonus = Double.parseDouble(parts[index++]);
+                            int teamSize = Integer.parseInt(parts[index++]);
+                            quantity = Integer.parseInt(parts[index]);
+                            employee = new Manager(uuid, name, position, salary, experience, department, mgrBonus, teamSize);
                             break;
                         case "FREELANCER":
-                            int flDuration = Integer.parseInt(parts[6]);
-                            double hourlyRate = Double.parseDouble(parts[7]);
-                            quantity = Integer.parseInt(parts[8]);
-                            employee = new Freelancer(name, position, salary, experience, department, flDuration, hourlyRate);
+                            int flDuration = Integer.parseInt(parts[index++]);
+                            double hourlyRate = Double.parseDouble(parts[index++]);
+                            quantity = Integer.parseInt(parts[index]);
+                            employee = new Freelancer(uuid, name, position, salary, experience, department, flDuration, hourlyRate);
                             break;
                         default:
                             break;
@@ -102,12 +107,6 @@ public class FileManager {
         return company;
     }
 
-    /**
-     * Зберігає дані компанії та всіх співробітників у файл input.txt.
-     *
-     * @param fileName назва файлу
-     * @param company  об'єкт компанії
-     */
     public static void saveCompanyToFile(String fileName, Company company) {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(fileName))) {
             writer.write("COMPANY;" + company.getName());

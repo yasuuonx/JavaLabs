@@ -3,20 +3,17 @@ package com.example;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.UUID;
 
 /**
- * Клас-контейнер, який агрегує колекцію співробітників та підтримує сортування.
+ * Клас-контейнер, який агрегує колекцію співробітників та надає методи
+ * додавання, пошуку, сортування, модифікації (update) та видалення (delete).
  */
 public class Company {
     private String name;
     private ArrayList<Employee> employees;
     private ArrayList<Integer> quantities;
 
-    /**
-     * Конструктор компанії.
-     *
-     * @param name назва компанії
-     */
     public Company(String name) {
         setName(name);
         this.employees = new ArrayList<Employee>();
@@ -34,12 +31,6 @@ public class Company {
         this.name = name.trim();
     }
 
-    /**
-     * Додає співробітника або збільшує кількість, якщо такий уже є в колекції.
-     *
-     * @param emp      об'єкт співробітника
-     * @param quantity кількість штатних позицій
-     */
     public void addNewEmployee(Employee emp, int quantity) {
         if (emp == null) {
             throw new IllegalArgumentException("Співробітник не може бути null");
@@ -61,6 +52,51 @@ public class Company {
         quantities.add(Integer.valueOf(quantity));
     }
 
+    /**
+     * Модифікація об'єкта в колекції.
+     * Знаходить існуючий об'єкт за equals()/UUID та замінює його на новий.
+     *
+     * @param existingObject існуючий співробітник
+     * @param newObject новий співробітник з оновленими даними
+     * @return true, якщо оновлення виконано, або false, якщо об'єкт не знайдено
+     */
+    public boolean update(Employee existingObject, Employee newObject) {
+        if (existingObject == null || newObject == null) {
+            return false;
+        }
+
+        for (int i = 0; i < employees.size(); i++) {
+            Employee current = employees.get(i);
+            if (current.equals(existingObject)) {
+                employees.set(i, newObject);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Видалення об'єкта з колекції.
+     *
+     * @param existingObject співробітник, якого необхідно видалити
+     * @return true, якщо видалення виконано, або false, якщо об'єкт не знайдено
+     */
+    public boolean delete(Employee existingObject) {
+        if (existingObject == null) {
+            return false;
+        }
+
+        for (int i = 0; i < employees.size(); i++) {
+            Employee current = employees.get(i);
+            if (current.equals(existingObject)) {
+                employees.remove(i);
+                quantities.remove(i);
+                return true;
+            }
+        }
+        return false;
+    }
+
     public ArrayList<Employee> getEmployees() {
         return employees;
     }
@@ -77,23 +113,12 @@ public class Company {
         return employees.size();
     }
 
-    /**
-     * Повертає відсортовану копію списку співробітників за замовчуванням (Comparable).
-     *
-     * @return новий відсортований список співробітників
-     */
     public ArrayList<Employee> getSortedEmployees() {
         ArrayList<Employee> sortedList = new ArrayList<Employee>(this.employees);
         Collections.sort(sortedList);
         return sortedList;
     }
 
-    /**
-     * Повертає відсортовану копію списку співробітників за переданим Comparator.
-     *
-     * @param comparator критерій порівняння
-     * @return новий відсортований список співробітників
-     */
     public ArrayList<Employee> getSortedEmployees(Comparator<Employee> comparator) {
         ArrayList<Employee> sortedList = new ArrayList<Employee>(this.employees);
         if (comparator != null) {
@@ -102,12 +127,18 @@ public class Company {
         return sortedList;
     }
 
-    /**
-     * Пошук співробітників за посадою (без урахування регістру).
-     *
-     * @param position назва посади
-     * @return список знайдених співробітників
-     */
+    public Employee findByUuid(UUID uuid) {
+        if (uuid == null) {
+            return null;
+        }
+        for (Employee emp : employees) {
+            if (uuid.equals(emp.getUuid())) {
+                return emp;
+            }
+        }
+        return null;
+    }
+
     public ArrayList<Employee> searchByPosition(String position) {
         ArrayList<Employee> result = new ArrayList<Employee>();
         if (position == null || position.trim().isEmpty()) {
@@ -122,13 +153,6 @@ public class Company {
         return result;
     }
 
-    /**
-     * Пошук співробітників за діапазоном заробітної плати.
-     *
-     * @param minSalary мінімальна зарплата
-     * @param maxSalary максимальна зарплата
-     * @return список знайдених співробітників
-     */
     public ArrayList<Employee> searchBySalaryRange(double minSalary, double maxSalary) {
         ArrayList<Employee> result = new ArrayList<Employee>();
         for (Employee emp : employees) {
@@ -139,12 +163,6 @@ public class Company {
         return result;
     }
 
-    /**
-     * Пошук співробітників за відділом.
-     *
-     * @param department відділ
-     * @return список знайдених співробітників
-     */
     public ArrayList<Employee> searchByDepartment(Department department) {
         ArrayList<Employee> result = new ArrayList<Employee>();
         if (department == null) {

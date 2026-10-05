@@ -1,26 +1,31 @@
 package com.example;
 
 import java.util.Objects;
+import java.util.UUID;
 
 /**
- * Клас описує фрилансера з фіксованою погодинною ставкою.
+ * Клас описує фрилансера з погодинною ставкою.
  */
 public class Freelancer extends ContractEmployee {
     private double hourlyRate;
 
-    /**
-     * Конструктор фрилансера.
-     *
-     * @param name ім'я
-     * @param position посада
-     * @param salary базова ставка
-     * @param experienceYears стаж
-     * @param department відділ
-     * @param contractDurationMonths тривалість контракту в місяцях
-     * @param hourlyRate погодинна ставка
-     */
     public Freelancer(String name, String position, double salary, int experienceYears, Department department, int contractDurationMonths, double hourlyRate) {
         super(name, position, salary, experienceYears, department, contractDurationMonths);
+        setHourlyRate(hourlyRate);
+    }
+
+    public Freelancer(String name, String position, double salary, int experienceYears, Department department, double hourlyRate, int contractDurationMonths) {
+        super(name, position, salary, experienceYears, department, contractDurationMonths);
+        setHourlyRate(hourlyRate);
+    }
+
+    public Freelancer(UUID uuid, String name, String position, double salary, int experienceYears, Department department, int contractDurationMonths, double hourlyRate) {
+        super(uuid, name, position, salary, experienceYears, department, contractDurationMonths);
+        setHourlyRate(hourlyRate);
+    }
+
+    public Freelancer(UUID uuid, String name, String position, double salary, int experienceYears, Department department, double hourlyRate, int contractDurationMonths) {
+        super(uuid, name, position, salary, experienceYears, department, contractDurationMonths);
         setHourlyRate(hourlyRate);
     }
 
@@ -37,7 +42,7 @@ public class Freelancer extends ContractEmployee {
 
     @Override
     public String toFileString() {
-        return "FREELANCER;" + getName() + ";" + getPosition() + ";" + getSalary() + ";" + getExperienceYears() + ";" + getDepartment().name() + ";" + getContractDurationMonths() + ";" + hourlyRate;
+        return "FREELANCER;" + getUuid() + ";" + getName() + ";" + getPosition() + ";" + getSalary() + ";" + getExperienceYears() + ";" + getDepartment().name() + ";" + getContractDurationMonths() + ";" + hourlyRate;
     }
 
     @Override
@@ -56,12 +61,7 @@ public class Freelancer extends ContractEmployee {
 
     @Override
     public String toString() {
-<<<<<<< HEAD
-        return String.format("Freelancer { Ім'я: '%s', Посада: '%s', Зарплата: %.2f грн, Стаж: %d р., Відділ: %s, Контракт: %d міс., Ставка: %.2f грн/год }",
-                getName(), getPosition(), getSalary(), getExperienceYears(), getDepartment().getTitle(), getContractDurationMonths(), hourlyRate);
-=======
         return String.format("Freelancer { UUID: %s, Ім'я: '%s', Посада: '%s', Зарплата: %.2f грн, Стаж: %d р., Відділ: %s, Контракт: %d міс., Ставка: %.2f грн/год }",
                 getUuid(), getName(), getPosition(), getSalary(), getExperienceYears(), getDepartment().getTitle(), getContractDurationMonths(), hourlyRate);
->>>>>>> 127b5e2 (Implement Identifiable interface, UUID field and search by UUID)
     }
 }

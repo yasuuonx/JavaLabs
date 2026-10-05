@@ -1,25 +1,21 @@
 package com.example;
 
 import java.util.Objects;
+import java.util.UUID;
 
 /**
- * Клас описує тимчасового контрактного співробітника.
+ * Клас описує працівника на строковому договорі.
  */
 public class ContractEmployee extends Employee {
     private int contractDurationMonths;
 
-    /**
-     * Конструктор контрактного співробітника.
-     *
-     * @param name                   ім'я
-     * @param position               посада
-     * @param salary                 ставка зарплати
-     * @param experienceYears        стаж
-     * @param department             відділ
-     * @param contractDurationMonths тривалість контракту в місяцях
-     */
     public ContractEmployee(String name, String position, double salary, int experienceYears, Department department, int contractDurationMonths) {
         super(name, position, salary, experienceYears, department);
+        setContractDurationMonths(contractDurationMonths);
+    }
+
+    public ContractEmployee(UUID uuid, String name, String position, double salary, int experienceYears, Department department, int contractDurationMonths) {
+        super(uuid, name, position, salary, experienceYears, department);
         setContractDurationMonths(contractDurationMonths);
     }
 
@@ -32,6 +28,11 @@ public class ContractEmployee extends Employee {
             throw new IllegalArgumentException("Тривалість контракту повинна бути більшою за нуль");
         }
         this.contractDurationMonths = contractDurationMonths;
+    }
+
+    @Override
+    public String toFileString() {
+        return "CONTRACT;" + getUuid() + ";" + getName() + ";" + getPosition() + ";" + getSalary() + ";" + getExperienceYears() + ";" + getDepartment().name() + ";" + contractDurationMonths;
     }
 
     @Override
@@ -50,13 +51,7 @@ public class ContractEmployee extends Employee {
 
     @Override
     public String toString() {
-        return String.format("ContractEmployee { Ім'я: '%s', Посада: '%s', Зарплата: %.2f грн, Стаж: %d р., Відділ: %s, Контракт: %d міс. }",
-                             getName(), getPosition(), getSalary(), getExperienceYears(), getDepartment().getTitle(), contractDurationMonths);
+        return String.format("ContractEmployee { UUID: %s, Ім'я: '%s', Посада: '%s', Зарплата: %.2f грн, Стаж: %d р., Відділ: %s, Тривалість контракту: %d міс. }",
+                getUuid(), getName(), getPosition(), getSalary(), getExperienceYears(), getDepartment().getTitle(), contractDurationMonths);
     }
-	
-	@Override
-    public String toFileString() {
-        return "CONTRACT;" + getName() + ";" + getPosition() + ";" + getSalary() + ";" + getExperienceYears() + ";" + getDepartment().name() + ";" + contractDurationMonths;
-    }
-
 }
