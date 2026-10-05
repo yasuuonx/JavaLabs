@@ -1,10 +1,11 @@
 package com.example;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Scanner;
 
 /**
- * Драйвер програми з підтримкою меню сортування об'єктів через Comparable.
+ * Драйвер програми з інтерактивним меню, підтримкою сортування через анонімні класи Comparator.
  */
 public class Main {
     private static final String TEXT_FILE = "input.txt";
@@ -41,7 +42,7 @@ public class Main {
                     displayAllEmployees(company);
                     break;
                 case "4":
-                    displaySortedEmployees(company);
+                    handleSortMenu(scanner, company);
                     break;
                 case "5":
                     FileManager.saveCompanyToFile(TEXT_FILE, company);
@@ -59,20 +60,69 @@ public class Main {
     }
 
     private static void printHeader() {
-        System.out.println("Практична робота №13");
-        System.out.println("Тема: Abstract classes, interfaces, interface Comparable");
+        System.out.println("Практична робота №14");
+        System.out.println("Тема: Inner classes, interface Comparator");
         System.out.println("Виконав: студент Демченко Станіслав");
     }
 
-    private static void displaySortedEmployees(Company company) {
+    private static void handleSortMenu(Scanner scanner, Company company) {
         if (company.size() == 0) {
             System.out.println("Колекція компанії порожня. Немає об'єктів для сортування.");
             return;
         }
 
-        ArrayList<Employee> sortedList = company.getSortedEmployees();
         System.out.println();
-        System.out.println("Відсортований список співробітників за алфавітом (всього: " + sortedList.size() + "):");
+        System.out.println("Оберіть критерій сортування:");
+        System.out.println("1. Сортувати за заробітною платою (за спаданням)");
+        System.out.println("2. Сортувати за стажем роботи (за зростанням)");
+        System.out.println("3. Сортувати за відділом компанії (за алфавітом)");
+        System.out.println("0. Повернутися в головне меню");
+        System.out.print("Ваш вибір: ");
+
+        String sortChoice = scanner.nextLine().trim();
+
+        Comparator<Employee> comparator = null;
+        String criteriaTitle = "";
+
+        switch (sortChoice) {
+            case "1":
+                criteriaTitle = "за заробітною платою (від вищої до нижчої)";
+                comparator = new Comparator<Employee>() {
+                    @Override
+                    public int compare(Employee o1, Employee o2) {
+                        return Double.compare(o2.getSalary(), o1.getSalary());
+                    }
+                };
+                break;
+            case "2":
+                criteriaTitle = "за стажем роботи (від меншого до більшого)";
+                comparator = new Comparator<Employee>() {
+                    @Override
+                    public int compare(Employee o1, Employee o2) {
+                        return Integer.compare(o1.getExperienceYears(), o2.getExperienceYears());
+                    }
+                };
+                break;
+            case "3":
+                criteriaTitle = "за назвою відділу компанії (за алфавітом)";
+                comparator = new Comparator<Employee>() {
+                    @Override
+                    public int compare(Employee o1, Employee o2) {
+                        return o1.getDepartment().getTitle().compareToIgnoreCase(o2.getDepartment().getTitle());
+                    }
+                };
+                break;
+            case "0":
+                System.out.println("Повернення до головного меню без сортування.");
+                return;
+            default:
+                System.out.println("Помилка: невідомий критерій сортування.");
+                return;
+        }
+
+        ArrayList<Employee> sortedList = company.getSortedEmployees(comparator);
+        System.out.println();
+        System.out.println("Відсортований список співробітників " + criteriaTitle + " (всього: " + sortedList.size() + "):");
         for (Employee emp : sortedList) {
             System.out.println(emp);
         }
