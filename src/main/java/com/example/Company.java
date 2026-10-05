@@ -6,7 +6,8 @@ import java.util.Comparator;
 import java.util.UUID;
 
 /**
- * Клас-контейнер, який агрегує колекцію співробітників та надає методи пошуку і сортування.
+ * Клас-контейнер, який агрегує колекцію співробітників та реалізує
+ * операції додавання, оновлення (update), видалення (delete), пошуку та сортування.
  */
 public class Company {
     private String name;
@@ -51,6 +52,48 @@ public class Company {
         quantities.add(Integer.valueOf(quantity));
     }
 
+    /**
+     * Модифікація об'єкта в колекції (Завдання 1, ЛР 17).
+     * @param existingObject об'єкт, який потрібно знайти та оновити
+     * @param newObject новий об'єкт з оновленими значеннями
+     * @return true, якщо об'єкт знайдено та оновлено; false - якщо не знайдено
+     */
+    public boolean update(Employee existingObject, Employee newObject) {
+        if (existingObject == null || newObject == null) {
+            return false;
+        }
+
+        for (int i = 0; i < employees.size(); i++) {
+            Employee current = employees.get(i);
+            if (current.equals(existingObject)) {
+                employees.set(i, newObject);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Видалення об'єкта з колекції (Завдання 2, ЛР 17).
+     * @param existingObject об'єкт, який потрібно видалити
+     * @return true, якщо видалено успішно; false - якщо об'єкт не знайдено
+     */
+    public boolean delete(Employee existingObject) {
+        if (existingObject == null) {
+            return false;
+        }
+
+        for (int i = 0; i < employees.size(); i++) {
+            Employee current = employees.get(i);
+            if (current.equals(existingObject)) {
+                employees.remove(i);
+                quantities.remove(i);
+                return true;
+            }
+        }
+        return false;
+    }
+
     public ArrayList<Employee> getEmployees() {
         return employees;
     }
@@ -81,12 +124,6 @@ public class Company {
         return sortedList;
     }
 
-    /**
-     * Пошук співробітника за його UUID.
-     *
-     * @param uuid шуканий ідентифікатор
-     * @return знайдений співробітник або null
-     */
     public Employee findByUuid(UUID uuid) {
         if (uuid == null) {
             return null;
